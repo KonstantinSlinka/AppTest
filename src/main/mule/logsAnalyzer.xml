@@ -13,7 +13,11 @@
 			<ee:message >
 			</ee:message>
 			<ee:variables >
-				<ee:set-variable variableName="period" ><![CDATA[payload.period]]></ee:set-variable>
+				<ee:set-variable variableName="period" ><![CDATA[%dw 2.0
+output application/json
+var types = payload.timeType splitBy ","
+---
+types[0] ++ payload.period ++ types[1]]]></ee:set-variable>
 				<ee:set-variable variableName="environmentsForAnalysis" ><![CDATA[(payload.environments splitBy  ",") default ${environments}]]></ee:set-variable>
 				<ee:set-variable variableName="applicationsForAnalysis" ><![CDATA[(payload.applications splitBy  ",") default ${applications}]]></ee:set-variable>
 			</ee:variables>
