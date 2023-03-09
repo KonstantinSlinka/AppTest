@@ -2,206 +2,248 @@
 <html class="no-js" lang="ru">
 
 <head>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap" rel="stylesheet">
-  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-  <title>CloudHub logs analyzer</title>
-  <style>
-    #disableBtnClass{
-      pointer-events: none;
-      border: none;
-      border-radius: 30px;
-      font-size: 15px;
-      height: 45px;
-      outline: none;
-      background: rgba(0, 255, 26, 0.2);
-      cursor: pointer;
-      transition: .3s;
-      font-weight: 400;
-      line-height: 45px;
-      text-align: center;
-    }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap" rel="stylesheet">
+    <script src='http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.js'></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>CloudHub logs analyzer</title>
+    <style>
+        #disableBtnClass{
+            pointer-events: none;
+            border: #282c34;
+            border-radius: 30px;
+            font-size: 15px;
+            height: 45px;
+            outline: none;
+            background: rgba(0, 255, 26, 0.5);
+            cursor: pointer;
+            transition: .3s;
+            font-weight: 400;
+            line-height: 45px;
+            text-align: center;
+        }
 
-    *{
-      font-family: 'Roboto', sans-serif;
-      font-weight: 100;
-    }
+        *{
+            font-family: 'Roboto', sans-serif;
+            font-weight: 100;
+        }
 
-    body{
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(125deg, white, #00a0dc);
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-    }
+        .timeTypeOption{
+            font-weight: 100;
+        }
+        #timeType{
+            border: none;
+            border-radius: 30px;
+            font-size: 15px;
+            height: 45px;
+            outline: none;
+            width: 50%;
+            background: rgba(255,255,255,0.7);
+            cursor: pointer;
+            transition: .3s;
+            font-weight: 400;
+            margin-left: 10px;
+            padding: 10px;
+        }
 
-  .box {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 70vh;
-  }
+        body{
+            margin: 20px;
+            padding: 20px;
+            background: linear-gradient(125deg, white, #00a0dc);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
 
-    .container {
-      width: 550px;
-      display: flex;
-      flex-direction: column;
-      padding: 0 15px 0 15px;
-      align-items: center;
-    }
+        .box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
 
-    .errorDescription{
-      width: 350px;
-      background: rgba(255,255,255,0.2);
-    }
+        .container {
+            width: 600px;
+            display: flex;
+            flex-direction: column;
+            padding: 0 15px 0 15px;
+            align-items: center;
+        }
 
-    .container1 {
-      display: flex;
-      width: 350px;
-      flex-direction: column;
-      align-content: center;
-    }
+        .container1 {
+            display: flex;
+            width: 350px;
+            flex-direction: column;
+            align-content: center;
+        }
 
-    .headTest{
-      color: white;
-      font-size: 30px;
-      display: flex;
-      justify-content: center;
-      padding: 10px 0 10px 0;
-      text-align: center;
-      font-family: 'Roboto', sans-serif;
-      font-weight: 400;
-    }
+        .headTest{
+            color: white;
+            font-size: 30px;
+            display: flex;
+            justify-content: center;
+            padding: 10px 0 10px 0;
+            text-align: center;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+        }
 
-    .input-field{
-      display: flex;
-      flex-direction: column;
-    }
+        .input-field{
+            display: flex;
+            flex-direction: column;
+        }
 
-    input{
-      height: 45px;
-      width: 87%;
-      border: none;
-      outline: none;
-      border-radius: 30px;
-      color: white;
-      padding: 0 0 0 42px;
-      background: rgba(255,255,255,0.2);
-      font-size: 16px;
-    }
+        input{
+            height: 45px;
+            width: 87%;
+            border: none;
+            outline: none;
+            border-radius: 30px;
+            color: white;
+            padding: 0 0 0 42px;
+            background: rgba(255,255,255,0.2);
+            font-size: 16px;
+        }
 
-    ::-webkit-input-placeholder{
-      color: white;
-    }
+        ::-webkit-input-placeholder{
+            color: white;
+        }
 
-    button{
-      border: none;
-      border-radius: 30px;
-      font-size: 15px;
-      height: 45px;
-      outline: none;
-      width: 100%;
-      background: rgba(255,255,255,0.7);
-      cursor: pointer;
-      transition: .3s;
-      font-weight: 400;
-    }
+        .environment{
+            border-style: solid;
+            border-color: aliceblue;
+            -webkit-border-radius: 30px;
+            padding: 20px;
+            margin: 20px;
+        }
 
-    #logsOutput{
-      width: 100%;
-    }
+        button{
+            border: none;
+            border-radius: 30px;
+            font-size: 15px;
+            height: 45px;
+            outline: none;
+            width: 100%;
+            background: rgba(255,255,255,0.7);
+            cursor: pointer;
+            transition: .3s;
+            font-weight: 400;
+        }
 
-    button:hover{
-      box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
-    }
+        #logsOutput{
+            width: 100%;
+        }
 
-    .applicationContainer{
-      display: flex;
-      flex-direction: column;
-      margin-top: 30px;
-    }
+        button:hover{
+            box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
+        }
 
-    .button{
-      border: none;
-      border-radius: 30px;
-      font-size: 15px;
-      height: 45px;
-      outline: none;
-      background: rgba(255, 0, 0, 0.2);
-      cursor: pointer;
-      transition: .3s;
-      font-weight: 400;
-      line-height: 45px;
-      text-align: center;
-    }
+        .applicationContainer{
+            display: flex;
+            flex-direction: column;
+            margin-top: 30px;
+        }
 
-    .button:hover{
-      box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
-    }
+        .button{
+            border: none;
+            border-radius: 30px;
+            font-size: 15px;
+            height: 45px;
+            outline: none;
+            background: rgba(255, 0, 0, 0.5);
+            cursor: pointer;
+            transition: .3s;
+            font-weight: 400;
+            line-height: 45px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-    .hide {
-      display: none
-    }
+        .button:hover{
+            box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
+        }
 
-    .show{
-      display: flex;
-      justify-content: center;
-    }
+        .hide {
+            display: none
+        }
 
-  </style>
+        .show{
+            display: flex;
+            justify-content: center;
+        }
 
-    </head>
+    </style>
 
-    <body>
-    <div class="box">
-      <div class="container">
+</head>
+
+<body>
+<div class="box">
+    <div class="container">
         <div class="container1">
-    <form action="\logs" method="post" >
-      <div class="top-header"><span class="headTest">Get logs from your applications</span></div>
-      <div class="input-field">
-        <input type="text" id="fperiod" name="period" placeholder="Period"><br><br>
-      </div>
-      <div class="input-field">
-        <input type="text" id="fapplications" name="applications" placeholder="Applications"><br><br>
-      </div>
-      <div class="input-field">
-        <input type="text" id="fenvironments" name="environments" placeholder="Environments"><br><br>
-      </div>
-      <div class="input-field">
-        <button id="getLogs" type="submit">Get logs</button>
-      </div>
-    </form>
+            <form action="\logs" method="post" >
+                <div class="top-header"><span class="headTest">Get logs from your applications</span></div>
+                <div style="display: flex">
+                    <input type="text" id="fperiod" name="period" placeholder="Period">
+                    <select name="timeType" id="timeType">
+                        <option class="timeTypeOption" value="PT,M">minutes</option>
+                        <option class="timeTypeOption" value="PT,H">hour</option>
+                        <option class="timeTypeOption" value="P,D">day</option>
+                        <option class="timeTypeOption" value="P,M">month</option>
+                    </select>
+                </div>
+                <br><br>
+                <div class="input-field">
+                    <input type="text" id="fapplications" name="applications" placeholder="Applications"><br><br>
+                </div>
+                <div class="input-field">
+                    <input type="text" id="fenvironments" name="environments" placeholder="Environments"><br><br>
+                </div>
+                <div class="input-field">
+                    <button id="getLogs" type="submit">Get logs</button>
+                </div>
+            </form>
         </div>
-    <br>
-    <div id="logsOutput"></div>
-    <div id="result" hidden>#[vars.result]</div>
+        <br>
+        <div id="logsOutput"></div>
+        <div id="result" hidden>#[vars.result]</div>
     </div>
-    </div>
+</div>
 
-    <script>
 
-      const divelem = document.querySelector("#logsOutput")
+<script>
 
-      function output() {
+    function parseData(errors) {
+        let data = [];
+        errors.forEach(
+            (element) =>
+                data.push([element.time,element.description.Message,element.description.ErrorType,element.description.event]))
+        return data;
+    }
+
+    const divelem = document.querySelector("#logsOutput")
+
+    function output() {
         const result = JSON.parse(document.querySelector("#result")?.innerHTML)
         result.forEach(error => {
-          const environment = document.createElement("div");
-          environment.innerHTML += "<span class='headTest'> Environment: " + error.environment + "</span><br>"
-          divelem.append(environment)
-          error.applications.forEach(function(value, index){
-            return createApplicationBlock(environment, value["application name"], value["countErrors"], value.errors, value["application name"] + index)
+            const environment = document.createElement("div");
+            environment.setAttribute("class", "environment")
+            environment.innerHTML += "<span class='headTest'> Environment: " + error.environment + "</span><br>"
+            divelem.append(environment)
+            error.applications.forEach(function(value, index){
+                return createApplicationBlock(environment, value["application name"], value["countErrors"], value.errors, value["application name"] + index)
+            })
         })
-        })
-      }
+    }
 
-      function getInfoOfApp(list){
-          list.classList.toggle('hide')
-          list.classList.toggle('show')
-      }
+    function getInfoOfApp(list){
+        list.classList.toggle('hide')
+        list.classList.toggle('show')
+    }
 
-      function createApplicationBlock (environment, applicationName, countError, errors, index) {
+    function createApplicationBlock (environment, applicationName, countError, errors, index) {
         const block = document.createElement("div");
         block.setAttribute("class", "applicationContainer")
         environment.append(block)
@@ -209,41 +251,41 @@
         button.setAttribute("class", "btn" + index)
         button.setAttribute("class", "button")
         button.addEventListener("click",() => {
-          getInfoOfApp(list)
+            getInfoOfApp(list)
         })
         button.innerHTML += "<span style='margin-right: 50px; font-weight:400'> Application name: " + applicationName + "</span>"
         button.innerHTML += "<span style='margin-left: 50px; font-weight:400'> Error count: " + countError + "</span>"
         if (countError === 0){
-          console.log("error 0")
-          button.removeAttribute("class")
-          button.setAttribute("id", "disableBtnClass")
-          button.setAttribute("class", "btn" + index)
+            console.log("error 0")
+            button.removeAttribute("class")
+            button.setAttribute("id", "disableBtnClass")
+            button.setAttribute("class", "btn" + index)
         }
         block.append(button)
         const list = document.createElement("div");
         list.setAttribute("class", "list" + index)
         list.setAttribute("class", "hide")
         block.append(list)
-        const item = document.createElement("div");
-        item.setAttribute("class", "errorDescription")
-        errors.forEach(error =>{
-          item.innerHTML += "Time: " + error.time;
-          item.innerHTML += '<br>';
-          item.innerHTML += "Message: " + error.description["Message"];
-          item.innerHTML += '<br>';
-          item.innerHTML += "Error type: " + error.description["ErrorType"];
-          item.innerHTML += '<br>';
-          item.innerHTML += "Event: " + error.description.event;
-          item.innerHTML += '<br>';
-          item.innerHTML += "--------------------------------------------"
-          item.innerHTML += '<br>';
-        })
-        list.append(item)
+        const table = document.createElement("table");
+        table.setAttribute("id", "errorTable" + index)
+        $(document).ready(function () {
+            $('#errorTable' + index).DataTable({
+                data: parseData(errors),
+                columns: [
+                    { title: 'Time' },
+                    { title: 'Message' },
+                    { title: 'Error type' },
+                    { title: 'Event' }
+                ],
+            })});
 
-      }
-      output()
-    </script>
+        list.append(table)
 
-    </body>
+    }
+    output()
+</script>
 
-    </html>
+
+</body>
+
+</html>
