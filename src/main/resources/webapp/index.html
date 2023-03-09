@@ -1,0 +1,249 @@
+<!doctype html>
+<html class="no-js" lang="ru">
+
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap" rel="stylesheet">
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <title>CloudHub logs analyzer</title>
+  <style>
+    #disableBtnClass{
+      pointer-events: none;
+      border: none;
+      border-radius: 30px;
+      font-size: 15px;
+      height: 45px;
+      outline: none;
+      background: rgba(0, 255, 26, 0.2);
+      cursor: pointer;
+      transition: .3s;
+      font-weight: 400;
+      line-height: 45px;
+      text-align: center;
+    }
+
+    *{
+      font-family: 'Roboto', sans-serif;
+      font-weight: 100;
+    }
+
+    body{
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(125deg, white, #00a0dc);
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+
+  .box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+  }
+
+    .container {
+      width: 550px;
+      display: flex;
+      flex-direction: column;
+      padding: 0 15px 0 15px;
+      align-items: center;
+    }
+
+    .errorDescription{
+      width: 350px;
+      background: rgba(255,255,255,0.2);
+    }
+
+    .container1 {
+      display: flex;
+      width: 350px;
+      flex-direction: column;
+      align-content: center;
+    }
+
+    .headTest{
+      color: white;
+      font-size: 30px;
+      display: flex;
+      justify-content: center;
+      padding: 10px 0 10px 0;
+      text-align: center;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 400;
+    }
+
+    .input-field{
+      display: flex;
+      flex-direction: column;
+    }
+
+    input{
+      height: 45px;
+      width: 87%;
+      border: none;
+      outline: none;
+      border-radius: 30px;
+      color: white;
+      padding: 0 0 0 42px;
+      background: rgba(255,255,255,0.2);
+      font-size: 16px;
+    }
+
+    ::-webkit-input-placeholder{
+      color: white;
+    }
+
+    button{
+      border: none;
+      border-radius: 30px;
+      font-size: 15px;
+      height: 45px;
+      outline: none;
+      width: 100%;
+      background: rgba(255,255,255,0.7);
+      cursor: pointer;
+      transition: .3s;
+      font-weight: 400;
+    }
+
+    #logsOutput{
+      width: 100%;
+    }
+
+    button:hover{
+      box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
+    }
+
+    .applicationContainer{
+      display: flex;
+      flex-direction: column;
+      margin-top: 30px;
+    }
+
+    .button{
+      border: none;
+      border-radius: 30px;
+      font-size: 15px;
+      height: 45px;
+      outline: none;
+      background: rgba(255, 0, 0, 0.2);
+      cursor: pointer;
+      transition: .3s;
+      font-weight: 400;
+      line-height: 45px;
+      text-align: center;
+    }
+
+    .button:hover{
+      box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
+    }
+
+    .hide {
+      display: none
+    }
+
+    .show{
+      display: flex;
+      justify-content: center;
+    }
+
+  </style>
+
+    </head>
+
+    <body>
+    <div class="box">
+      <div class="container">
+        <div class="container1">
+    <form action="\logs" method="post" >
+      <div class="top-header"><span class="headTest">Get logs from your applications</span></div>
+      <div class="input-field">
+        <input type="text" id="fperiod" name="period" placeholder="Period"><br><br>
+      </div>
+      <div class="input-field">
+        <input type="text" id="fapplications" name="applications" placeholder="Applications"><br><br>
+      </div>
+      <div class="input-field">
+        <input type="text" id="fenvironments" name="environments" placeholder="Environments"><br><br>
+      </div>
+      <div class="input-field">
+        <button id="getLogs" type="submit">Get logs</button>
+      </div>
+    </form>
+        </div>
+    <br>
+    <div id="logsOutput"></div>
+    <div id="result" hidden>#[vars.result]</div>
+    </div>
+    </div>
+
+    <script>
+
+      const divelem = document.querySelector("#logsOutput")
+
+      function output() {
+        const result = JSON.parse(document.querySelector("#result")?.innerHTML)
+        result.forEach(error => {
+          const environment = document.createElement("div");
+          environment.innerHTML += "<span class='headTest'> Environment: " + error.environment + "</span><br>"
+          divelem.append(environment)
+          error.applications.forEach(function(value, index){
+            return createApplicationBlock(environment, value["application name"], value["countErrors"], value.errors, value["application name"] + index)
+        })
+        })
+      }
+
+      function getInfoOfApp(list){
+          list.classList.toggle('hide')
+          list.classList.toggle('show')
+      }
+
+      function createApplicationBlock (environment, applicationName, countError, errors, index) {
+        const block = document.createElement("div");
+        block.setAttribute("class", "applicationContainer")
+        environment.append(block)
+        const button = document.createElement("div");
+        button.setAttribute("class", "btn" + index)
+        button.setAttribute("class", "button")
+        button.addEventListener("click",() => {
+          getInfoOfApp(list)
+        })
+        button.innerHTML += "<span style='margin-right: 50px; font-weight:400'> Application name: " + applicationName + "</span>"
+        button.innerHTML += "<span style='margin-left: 50px; font-weight:400'> Error count: " + countError + "</span>"
+        if (countError === 0){
+          console.log("error 0")
+          button.removeAttribute("class")
+          button.setAttribute("id", "disableBtnClass")
+          button.setAttribute("class", "btn" + index)
+        }
+        block.append(button)
+        const list = document.createElement("div");
+        list.setAttribute("class", "list" + index)
+        list.setAttribute("class", "hide")
+        block.append(list)
+        const item = document.createElement("div");
+        item.setAttribute("class", "errorDescription")
+        errors.forEach(error =>{
+          item.innerHTML += "Time: " + error.time;
+          item.innerHTML += '<br>';
+          item.innerHTML += "Message: " + error.description["Message"];
+          item.innerHTML += '<br>';
+          item.innerHTML += "Error type: " + error.description["ErrorType"];
+          item.innerHTML += '<br>';
+          item.innerHTML += "Event: " + error.description.event;
+          item.innerHTML += '<br>';
+          item.innerHTML += "--------------------------------------------"
+          item.innerHTML += '<br>';
+        })
+        list.append(item)
+
+      }
+      output()
+    </script>
+
+    </body>
+
+    </html>
