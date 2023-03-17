@@ -11,42 +11,10 @@
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <title>CloudHub logs analyzer</title>
     <style>
-        #disableBtnClass{
-            pointer-events: none;
-            border: #282c34;
-            border-radius: 30px;
-            font-size: 15px;
-            height: 45px;
-            outline: none;
-            background: rgba(0, 255, 26, 0.5);
-            cursor: pointer;
-            transition: .3s;
-            font-weight: 400;
-            line-height: 45px;
-            text-align: center;
-        }
 
         *{
             font-family: 'Roboto', sans-serif;
             font-weight: 100;
-        }
-
-        .timeTypeOption{
-            font-weight: 100;
-        }
-        #timeType{
-            border: none;
-            border-radius: 30px;
-            font-size: 15px;
-            height: 45px;
-            outline: none;
-            width: 50%;
-            background: rgba(255,255,255,0.7);
-            cursor: pointer;
-            transition: .3s;
-            font-weight: 400;
-            margin-left: 10px;
-            padding: 10px;
         }
 
         body{
@@ -80,20 +48,10 @@
             align-content: center;
         }
 
-        .headTest{
-            color: white;
-            font-size: 30px;
-            display: flex;
-            justify-content: center;
-            padding: 10px 0 10px 0;
-            text-align: center;
-            font-family: 'Roboto', sans-serif;
-            font-weight: 400;
-        }
-
         .input-field{
             display: flex;
             flex-direction: column;
+            padding-bottom: 30px
         }
 
         input{
@@ -112,14 +70,6 @@
             color: white;
         }
 
-        .environment{
-            border-style: solid;
-            border-color: aliceblue;
-            -webkit-border-radius: 30px;
-            padding: 20px;
-            margin: 20px;
-        }
-
         button{
             border: none;
             border-radius: 30px;
@@ -133,46 +83,8 @@
             font-weight: 400;
         }
 
-        #logsOutput{
-            width: 100%;
-        }
-
         button:hover{
             box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
-        }
-
-        .applicationContainer{
-            display: flex;
-            flex-direction: column;
-            margin-top: 30px;
-        }
-
-        .button{
-            border: none;
-            border-radius: 30px;
-            font-size: 15px;
-            height: 45px;
-            outline: none;
-            background: rgba(255, 0, 0, 0.5);
-            cursor: pointer;
-            transition: .3s;
-            font-weight: 400;
-            line-height: 45px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .button:hover{
-            box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
-        }
-
-        .hide {
-            display: none
-        }
-
-        .show{
-            display: flex;
-            justify-content: center;
         }
 
     </style>
@@ -183,109 +95,18 @@
 <div class="box">
     <div class="container">
         <div class="container1">
-            <form action="\logs" method="post" >
-                <div class="top-header"><span class="headTest">Get logs from your applications</span></div>
-                <div style="display: flex">
-                    <input type="text" id="fperiod" name="period" placeholder="Period">
-                    <select name="timeType" id="timeType">
-                        <option class="timeTypeOption" value="PT,M">minutes</option>
-                        <option class="timeTypeOption" value="PT,H">hour</option>
-                        <option class="timeTypeOption" value="P,D">day</option>
-                        <option class="timeTypeOption" value="P,M">month</option>
-                    </select>
-                </div>
-                <br><br>
-                <div class="input-field">
-                    <input type="text" id="fapplications" name="applications" placeholder="Applications"><br><br>
-                </div>
-                <div class="input-field">
-                    <input type="text" id="fenvironments" name="environments" placeholder="Environments"><br><br>
-                </div>
-                <div class="input-field">
-                    <button id="getLogs" type="submit">Get logs</button>
-                </div>
-            </form>
+             <div class="input-field">
+             <a href="logs">
+                 <button>Get logs</button>
+             </a>
+             </div>
+             <div class="input-field">
+             <a href="metrics.html">
+                 <button>Get metrics</button>
+             </a>
+             </div>
         </div>
-        <br>
-        <div id="logsOutput"></div>
-        <div id="result" hidden>#[vars.result]</div>
     </div>
 </div>
-
-
-<script>
-
-    function parseData(errors) {
-        let data = [];
-        errors.forEach(
-            (element) =>
-                data.push([element.time,element.description.Message,element.description.ErrorType,element.description.event]))
-        return data;
-    }
-
-    const divelem = document.querySelector("#logsOutput")
-
-    function output() {
-        const result = JSON.parse(document.querySelector("#result")?.innerHTML)
-        result.forEach(error => {
-            const environment = document.createElement("div");
-            environment.setAttribute("class", "environment")
-            environment.innerHTML += "<span class='headTest'> Environment: " + error.environment + "</span><br>"
-            divelem.append(environment)
-            error.applications.forEach(function(value, index){
-                return createApplicationBlock(environment, value["application name"], value["countErrors"], value.errors, value["application name"] + index)
-            })
-        })
-    }
-
-    function getInfoOfApp(list){
-        list.classList.toggle('hide')
-        list.classList.toggle('show')
-    }
-
-    function createApplicationBlock (environment, applicationName, countError, errors, index) {
-        const block = document.createElement("div");
-        block.setAttribute("class", "applicationContainer")
-        environment.append(block)
-        const button = document.createElement("div");
-        button.setAttribute("class", "btn" + index)
-        button.setAttribute("class", "button")
-        button.addEventListener("click",() => {
-            getInfoOfApp(list)
-        })
-        button.innerHTML += "<span style='margin-right: 50px; font-weight:400'> Application name: " + applicationName + "</span>"
-        button.innerHTML += "<span style='margin-left: 50px; font-weight:400'> Error count: " + countError + "</span>"
-        if (countError === 0){
-            console.log("error 0")
-            button.removeAttribute("class")
-            button.setAttribute("id", "disableBtnClass")
-            button.setAttribute("class", "btn" + index)
-        }
-        block.append(button)
-        const list = document.createElement("div");
-        list.setAttribute("class", "list" + index)
-        list.setAttribute("class", "hide")
-        block.append(list)
-        const table = document.createElement("table");
-        table.setAttribute("id", "errorTable" + index)
-        $(document).ready(function () {
-            $('#errorTable' + index).DataTable({
-                data: parseData(errors),
-                columns: [
-                    { title: 'Time' },
-                    { title: 'Message' },
-                    { title: 'Error type' },
-                    { title: 'Event' }
-                ],
-            })});
-
-        list.append(table)
-
-    }
-    output()
-</script>
-
-
 </body>
-
 </html>
