@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_2cc82e6b_c460_4fd0_b79a_f97d9b93bcd4_Output_Variables_environments = Any
+

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:spring="http://www.mulesoft.org/schema/mule/spring" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+    <flow name="supportAppForAnypointPlatformFlow"  >
+		<http:listener doc:name="Listener"  config-ref="HTTP_Listener_config" path="/"/>
+		<http:basic-security-filter doc:name="Basic security filter"  realm="anypointPlatformSupport" />
+		<spring:authorization-filter doc:name="Authorization filter"  requiredAuthorities="ROLE_ADMIN" />
+		<http:load-static-resource doc:name="Load index page"  resourceBasePath="#[p('app.home') ++ &quot;//webapp&quot;]" />
+	</flow>
+    <configuration-properties doc:name="Configuration properties"  file="config\analysis.properties" />
+	<flow name="getLogs" >
+		<http:listener doc:name="Listener"  config-ref="HTTP_Listener_config" path="/logs" />
+		<set-payload doc:name="Set Payload to JSON"  value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload]"/>
+		<choice doc:name="Choice"  >
+			<when expression='#[payload == ""]'>
+				<http:load-static-resource doc:name="Load logs page"  resourceBasePath="#[p('app.home') ++ &quot;//webapp&quot;]" defaultFile="logs.html" />
+			</when>
+			<otherwise >
+				<flow-ref doc:name="logsOutput"  name="logsOutput"/>
+			</otherwise>
+		</choice>
+    </flow>
+	<flow name="getMetrics" doc:id="45f22ac1-8e63-43e1-b896-1a4feb8d9eee">
+		<http:listener doc:name="Listener" doc:id="4b39e359-2d53-49d9-a8f8-1e07a2597edd" config-ref="HTTP_Listener_config" path="/logs" />
+		<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload]" doc:name="Set Payload to JSON" doc:id="571a6987-db68-4e32-ae07-eee3b7cc2520" />
+		<choice doc:name="Choice" doc:id="8a42e6ab-4f0f-4879-9187-7c162f83761f">
+			<when expression='#[payload == ""]'>
+				<http:load-static-resource doc:name="Load metrics page" doc:id="016bc7e8-8e5e-4493-aa96-ff46f0495a73" resourceBasePath="#[p('app.home') ++ &quot;//webapp&quot;]" defaultFile="metrics.html" />
+			</when>
+			<otherwise>
+				<logger level="INFO" doc:name="Add flow for proccessing metrics" doc:id="0c08f7a6-97b8-47aa-bdbd-b3adc1ec0fa9" message="Add flow for proccessing metrics"/>
+			</otherwise>
+		</choice>
+	</flow>
+	<sub-flow name="logsOutput" >
+		<ee:transform doc:name="Set Result, Environments For Analysis, Applications For Analysis">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="period"><![CDATA[%dw 2.0
+output application/json
+var types = payload.timeType splitBy ","
+---
+types[0] ++ payload.period ++ types[1]]]></ee:set-variable>
+				<ee:set-variable variableName="environmentsForAnalysis"><![CDATA[(payload.environments splitBy  ",") default ${environments}]]></ee:set-variable>
+				<ee:set-variable variableName="applicationsForAnalysis"><![CDATA[(payload.applications splitBy  ",") default ${applications}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="retrieveToken"  name="retrieveToken"/>
+		<flow-ref doc:name="retrieveOrganizationId"  name="retrieveOrganizationId"/>
+		<flow-ref doc:name="retrieveEnvironments"  name="retrieveEnvironments"/>
+		<set-variable value="#[[]]" doc:name="Set Result" variableName="result" />
+		<foreach doc:name="For Each by environments" collection="#[vars.environments filter (item) -&gt; vars.environmentsForAnalysis contains item.name]">
+			<flow-ref doc:name="getApplications" name="getApplications" />
+			<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;vars.result + vars.environmentApplication]" doc:name="Set Result" variableName="result" />
+		</foreach>
+		<ee:transform doc:name="Transform Message">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+vars.result]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<parse-template doc:name="Parse Template"  location="webapp\logs.html" />
+	</sub-flow>
+	<flow name="updateToken"  >
+		<scheduler doc:name="Scheduler"  >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="HOURS"/>
+			</scheduling-strategy>
+		</scheduler>
+		<flow-ref doc:name="getToken" name="getToken" />
+		<flow-ref doc:name="getOrganizationId" name="getOrganizationId" />
+		<flow-ref doc:name="getEnvironments" name="getEnvironments" />
+	</flow>
+	<sub-flow name="getToken" >
+        <http:request method="POST" doc:name="HTTPS POST /accounts/api/v2/oauth2/token " config-ref="HTTPS_FOR_CONNECTING_TO_CLOUDHUB" path="/accounts/api/v2/oauth2/token" outputMimeType="application/json">
+            <http:body><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+    "client_id": "6b72b5120d19481ab9e9f17bccd5e0a9",
+    "client_secret": "0E993DF05dAA4ed281CfBB46a5c5dD67",
+    "grant_type": "client_credentials"
+}]]]></http:body>
+        </http:request>
+		<os:store doc:name="token"  key="token" >
+			<os:value ><![CDATA[#[payload.access_token]]]></os:value>
+		</os:store>
+    </sub-flow>
+	<sub-flow name="getOrganizationId" >
+		<flow-ref doc:name="retrieveToken"  name="retrieveToken"/>
+		<http:request method="GET" doc:name="HTTPS GET /accounts/api/me" config-ref="HTTPS_FOR_CONNECTING_TO_CLOUDHUB" path="/accounts/api/me" outputMimeType="application/json">
+            <http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer " ++ vars.token as String
+}]]]></http:headers>
+        </http:request>
+        <os:store doc:name="orgId"  key="orgId">
+			<os:value ><![CDATA[#[payload.client.org_id]]]></os:value>
+		</os:store>
+    </sub-flow>
+	<sub-flow name="getEnvironments" >
+        <flow-ref doc:name="retrieveToken"  name="retrieveToken" />
+		<flow-ref doc:name="retrieveOrganizationId"  name="retrieveOrganizationId"/>
+		<http:request method="GET" doc:name="HTTPS GET /accounts/api/organizations/{org_id}/environments" config-ref="HTTPS_FOR_CONNECTING_TO_CLOUDHUB" path='#["/accounts/api/organizations/" ++ vars.org_id ++ "/environments"]' outputMimeType="application/json">
+            <http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer " ++ vars.token as String
+}]]]></http:headers>
+        </http:request>
+		<os:store doc:name="environments"  key="environments" >
+			<os:value ><![CDATA[#[payload.data]]]></os:value>
+		</os:store>
+    </sub-flow>
+    <sub-flow name="retrieveToken"  >
+		<os:retrieve doc:name="token"  key="token" />
+		<set-variable value="#[payload]" doc:name="Set Token"  variableName="token"/>
+	</sub-flow>
+	<sub-flow name="retrieveOrganizationId" >
+		<os:retrieve doc:name="organizationId"  key="orgId" />
+		<set-variable value="#[payload]" doc:name="Set OrganizationId"  variableName="org_id" />
+	</sub-flow>
+	<sub-flow name="retrieveEnvironments" >
+		<os:retrieve doc:name="environments"  key="environments" />
+		<set-variable value="#[payload]" doc:name="Set Environments"  variableName="environments" />
+	</sub-flow>
+	<sub-flow name="getApplications">
+        <ee:transform doc:name="Set currentEnv, currentEnvName, applications"  >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="currentEnv" ><![CDATA[payload.id]]></ee:set-variable>
+				<ee:set-variable variableName="currentEnvName" ><![CDATA[payload.name]]></ee:set-variable>
+				<ee:set-variable variableName="applications" ><![CDATA[[]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="GET" doc:name="HTTPS GET /cloudhub/api/v2/applications" config-ref="HTTPS_FOR_CONNECTING_TO_CLOUDHUB" path="/cloudhub/api/v2/applications" outputMimeType="application/json">
+            <http:headers><![CDATA[#[output application/java
+---
+{
+	"X-ANYPNT-ENV-ID" : vars.currentEnv,
+	"Authorization" : "Bearer " ++ vars.token as String
+}]]]></http:headers>
+        </http:request>
+        <set-payload value="#[(payload filter (item) -&gt; vars.applicationsForAnalysis contains item.domain) default []]" doc:name="Filter applications"  />
+		<foreach doc:name="For Each by applications" collection="#[payload]">
+            <flow-ref doc:name="getInstnace" name="getInstnace" />
+            <set-variable value="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;vars.applications + vars.applicationInstances]" doc:name="Set Applications" variableName="applications" />
+        </foreach>
+        <set-variable value="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA; &quot;environment&quot;: vars.currentEnvName,&#xA; &quot;applications&quot;: vars.applications&#xA;}]" doc:name="Set EnvironmentApplication" variableName="environmentApplication" />
+    </sub-flow>
+	<sub-flow name="getInstnace">
+        <ee:transform doc:name="Set currentApp, errors"  >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="currentApp" ><![CDATA[payload.domain]]></ee:set-variable>
+				<ee:set-variable variableName="errors" ><![CDATA[[]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+        <http:request method="GET" doc:name="HTTPS GET /cloudhub/api/v2/applications/{domain}/deployments" config-ref="HTTPS_FOR_CONNECTING_TO_CLOUDHUB" path="#[&quot;/cloudhub/api/v2/applications/&quot; ++ vars.currentApp ++ &quot;/deployments&quot;]" outputMimeType="application/json">
+            <http:headers><![CDATA[#[output application/java
+---
+{
+	"X-ANYPNT-ENV-ID" : vars.currentEnv,
+	"Authorization" : "Bearer " ++ vars.token as String
+}]]]></http:headers>
+        </http:request>
+        <foreach doc:name="For Each by instances" collection="#[payload..instanceId]">
+            <flow-ref doc:name="getLogsOfSpecificInstance" name="getLogsOfSpecificInstance" />
+            <set-variable doc:name="Set Errors" variableName="errors"  value="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;vars.errors ++ payload]" />
+        </foreach>
+        <set-variable value="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA; &quot;application name&quot;: vars.currentApp,&#xA; &quot;countErrors&quot;: sizeOf(vars.errors),&#xA; (if(sizeOf(vars.errors) &gt; 0) (&quot;errors&quot;: vars.errors) else null)&#xA;}]" doc:name="Set ApplicationInstances" variableName="applicationInstances"  />
+    </sub-flow>
+	<sub-flow name="getLogsOfSpecificInstance">
+        <set-variable value="#[payload]" doc:name="Set CurrentInstance" variableName="currentInstance" />
+        <http:request method="GET" doc:name="HTTPS GET /cloudhub/api/v2/applications/{domain}/instances/{instance_id}/logs" config-ref="HTTPS_FOR_CONNECTING_TO_CLOUDHUB" path="#[&quot;/cloudhub/api/v2/applications/&quot; ++ vars.currentApp ++ &quot;/instances/&quot; ++ payload ++ &quot;/logs&quot;]" outputMimeType="application/json">
+            <http:headers><![CDATA[#[output application/java
+---
+{
+	"X-ANYPNT-ENV-ID" : vars.currentEnv,
+	"Authorization" : "Bearer " ++ vars.token as String
+}]]]></http:headers>
+        </http:request>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+import * from dw::core::Strings
+var errorList = payload.data filter ($.priority == "ERROR")
+fun errorParam (error, param) =  substringAfter((error splitBy "\n" filter ($ contains  param))[0],":")
+fun toReadableMessage (message) = {"Message" :errorParam(message, "Message "), "ErrorType" : errorParam(message, "Error type "), "event" : errorParam(message, "event")}
+var period = vars.period default "P1Y" as Period
+var startPeriodNew = now() - (period default now())
+fun isFit (endTime) = (endTime default now()) > startPeriodNew
+fun convertToDateTime (timestamp) = (timestamp / 1000) as DateTime
+---
+errorList map ((item) -> {"time" : convertToDateTime(item.timestamp), "description" : toReadableMessage(item.message)}) filter isFit($.time)]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </sub-flow>
+</mule>
