@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_6cac5044_0d70_4341_96a0_c31a8c919733_Output_Variables_environmentsForAnalysis = Any
+
