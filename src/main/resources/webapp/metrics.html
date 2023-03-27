@@ -1,0 +1,332 @@
+<!doctype html>
+<html class="no-js" lang="ru">
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap" rel="stylesheet">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>CloudHub logs analyzer</title>
+    <style>
+        #disableBtnClass{
+            pointer-events: none;
+            border: #282c34;
+            border-radius: 30px;
+            font-size: 15px;
+            height: 45px;
+            outline: none;
+            background: rgba(0, 255, 26, 0.5);
+            cursor: pointer;
+            transition: .3s;
+            font-weight: 400;
+            line-height: 45px;
+            text-align: center;
+        }
+
+        *{
+            font-family: 'Roboto', sans-serif;
+            font-weight: 100;
+        }
+
+        .timeTypeOption{
+            font-weight: 100;
+        }
+        #timeType{
+            border: none;
+            border-radius: 30px;
+            font-size: 15px;
+            height: 45px;
+            outline: none;
+            width: 50%;
+            background: rgba(255,255,255,0.7);
+            cursor: pointer;
+            transition: .3s;
+            font-weight: 400;
+            margin-left: 10px;
+            padding: 10px;
+        }
+
+        body{
+            margin: 20px;
+            padding: 20px;
+            background: linear-gradient(125deg, white, #00a0dc);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        .container {
+            width: 600px;
+            display: flex;
+            flex-direction: column;
+            padding: 0 15px 0 15px;
+            align-items: center;
+        }
+
+        .container1 {
+            display: flex;
+            width: 350px;
+            flex-direction: column;
+            align-content: center;
+        }
+
+        .headTest{
+            color: white;
+            font-size: 30px;
+            display: flex;
+            justify-content: center;
+            padding: 10px 0 10px 0;
+            text-align: center;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+        }
+
+        .input-field{
+            display: flex;
+            flex-direction: column;
+        }
+
+        input{
+            height: 45px;
+            width: 87%;
+            border: none;
+            outline: none;
+            border-radius: 30px;
+            color: white;
+            padding: 0 0 0 42px;
+            background: rgba(255,255,255,0.2);
+            font-size: 16px;
+        }
+
+        ::-webkit-input-placeholder{
+            color: white;
+        }
+
+        .environment{
+            border-style: solid;
+            border-color: aliceblue;
+            -webkit-border-radius: 30px;
+            padding: 20px;
+            margin: 20px;
+        }
+
+        td{
+            color: white;
+            text-align: center;
+        }
+
+        th{
+            border: 1px solid white;
+            font-weight: bold;
+            color: white;
+        }
+
+        button{
+            border: none;
+            border-radius: 30px;
+            font-size: 15px;
+            height: 45px;
+            outline: none;
+            width: 100%;
+            background: rgba(255,255,255,0.7);
+            cursor: pointer;
+            transition: .3s;
+            font-weight: 400;
+        }
+
+        #metricsOutput{
+            width: 100%;
+        }
+
+        button:hover{
+            box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
+        }
+
+        .applicationContainer{
+            display: flex;
+            flex-direction: column;
+            margin-top: 30px;
+        }
+
+        .button{
+            border: none;
+            border-radius: 30px;
+            font-size: 15px;
+            height: 45px;
+            outline: none;
+            background: rgba(255, 0, 0, 0.5);
+            cursor: pointer;
+            transition: .3s;
+            font-weight: 400;
+            line-height: 45px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .button:hover{
+            box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
+        }
+
+        .hide {
+            display: none
+        }
+
+        .show{
+            display: flex;
+            flex-direction: column;
+        }
+
+        h3{
+            display: flex;
+            justify-content: center;
+        }
+
+    </style>
+
+</head>
+
+<body>
+<div class="box">
+    <div class="container">
+        <div class="container1">
+            <form action="\metrics" method="post" >
+                <div class="top-header"><span class="headTest">Get metrics from your applications</span></div>
+                <div style="display: flex">
+                    <input type="text" id="fperiod" name="period" placeholder="Period">
+                    <select name="timeType" id="timeType">
+                        <option class="timeTypeOption" value="m">minutes</option>
+                        <option class="timeTypeOption" value="h">hour</option>
+                        <option class="timeTypeOption" value="d">day</option>
+                    </select>
+                </div>
+                <br><br>
+                <div class="input-field">
+                    <input type="text" id="fapplications" name="applications" placeholder="Applications"><br><br>
+                </div>
+                <div class="input-field">
+                    <input type="text" id="fenvironments" name="environments" placeholder="Environments"><br><br>
+                </div>
+                <div class="input-field">
+                    <button id="getMetrics" type="submit">Get metrics</button>
+                </div>
+            </form>
+            <div class="input-field" style="padding-top: 30px">
+                <a href="/">
+                    <button>Go to menu</button>
+                </a>
+            </div>
+        </div>
+        <br>
+        <div id="metricsOutput"></div>
+        <div id="result" hidden>#[vars.result]</div>
+    </div>
+</div>
+
+<script>
+
+    function parseData(metrics) {
+        let data = [];
+        metrics.forEach(
+            (element) =>
+                data.push([element.name, element.count]))
+        return data;
+    }
+
+    const divelem = document.querySelector("#metricsOutput")
+
+    function output() {
+        const result = JSON.parse(document.querySelector("#result")?.innerHTML)
+        result.forEach(environments => {
+            const environment = document.createElement("div");
+            environment.setAttribute("class", "environment")
+            environment.innerHTML += "<span class='headTest'> Environment: " + environments.environment + "</span><br>"
+            divelem.append(environment)
+            environments.applications.forEach(function (value, index) {
+                return createApplicationBlock(environment, value["application name"], value["inboundRequests"], value["outboundRequests"], value["application name"] + index)
+            })
+        })
+    }
+
+    function getInfoOfApp(list) {
+        list.classList.toggle('hide')
+        list.classList.toggle('show')
+    }
+
+    function createApplicationBlock(environment, applicationName, inboundRequest, outboundRequests, index) {
+        const block = document.createElement("div");
+        block.setAttribute("class", "applicationContainer")
+        environment.append(block)
+        const button = document.createElement("button");
+        button.setAttribute("class", "btn" + index)
+        button.addEventListener("click", () => {
+            getInfoOfApp(list)
+        })
+        button.innerHTML += "Application name: " + applicationName
+        block.append(button)
+        const list = document.createElement("div");
+        list.setAttribute("class", "list" + index)
+        list.setAttribute("class", "hide")
+        const inboundRequestHeader = document.createElement("h3")
+        inboundRequestHeader.innerHTML = "<span style='color: white; font-weight: bold'> Inbound requests </span><br>"
+
+        const inboundRequestTable = document.createElement("table")
+        list.append(inboundRequestHeader)
+        list.append(inboundRequestTable)
+        const tableHeadNames = ["Endpoint", "Count of request"]
+        generateTableHead(inboundRequestTable, tableHeadNames)
+        if (inboundRequest != null) {
+            generateTable(inboundRequestTable, parseData(inboundRequest))
+        } else {
+            generateTable(inboundRequestTable, [{endpoint: "Not found", count: "Not found"}])
+        }
+        const outboundRequestHeader = document.createElement("h3")
+        outboundRequestHeader.innerHTML = "<span style='color: white; font-weight: bold'> Outbound requests </span><br>"
+
+        const outboundRequestTable = document.createElement("table")
+        list.append(outboundRequestHeader)
+        list.append(outboundRequestTable)
+        generateTableHead(outboundRequestTable, tableHeadNames)
+        if (outboundRequests != null) {
+            generateTable(outboundRequestTable, parseData(outboundRequests))
+        } else {
+            generateTable(outboundRequestTable, [{endpoint: "Not found", count: "Not found"}])
+        }
+        block.append(list)
+    }
+
+    function generateTableHead(table, data) {
+        let thead = table.createTHead();
+        let row = thead.insertRow();
+        for (let key of data) {
+            let th = document.createElement("th");
+            let text = document.createTextNode(key);
+            th.appendChild(text);
+            row.appendChild(th);
+        }
+    }
+
+    function generateTable(table, data) {
+        for (let element of data) {
+            let row = table.insertRow();
+            for (key in element) {
+                let cell = row.insertCell();
+                let text = document.createTextNode(element[key]);
+                cell.appendChild(text);
+            }
+        }
+    }
+
+    output()
+</script>
+
+</body>
+
+</html>
