@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<sub-flow name="getToken" >
+        <http:request method="POST" doc:name="HTTPS POST /accounts/api/v2/oauth2/token " config-ref="HTTPS_FOR_CONNECTING_TO_CLOUDHUB" path="/accounts/api/v2/oauth2/token" outputMimeType="application/json">
+            <http:body><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+    "client_id": "cf8ab672f5844e97822f27454e0f0e04",
+    "client_secret": "81A2402DA78e4795976c80fD418b8dCa",
+    "grant_type": "client_credentials"
+}]]]></http:body>
+        </http:request>
+		<os:store doc:name="token"  key="token" >
+			<os:value ><![CDATA[#[payload.access_token]]]></os:value>
+		</os:store>
+    </sub-flow>
+	<sub-flow name="getOrganizationId" >
+		<flow-ref doc:name="retrieveToken"  name="retrieveToken"/>
+		<http:request method="GET" doc:name="HTTPS GET /accounts/api/me" config-ref="HTTPS_FOR_CONNECTING_TO_CLOUDHUB" path="/accounts/api/me" outputMimeType="application/json">
+            <http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer " ++ vars.token as String
+}]]]></http:headers>
+        </http:request>
+        <os:store doc:name="orgId"  key="orgId">
+			<os:value ><![CDATA[#[payload.client.org_id]]]></os:value>
+		</os:store>
+    </sub-flow>
+	<sub-flow name="getEnvironments" >
+        <flow-ref doc:name="retrieveToken"  name="retrieveToken" />
+		<flow-ref doc:name="retrieveOrganizationId"  name="retrieveOrganizationId"/>
+		<http:request method="GET" doc:name="HTTPS GET /accounts/api/organizations/{org_id}/environments" config-ref="HTTPS_FOR_CONNECTING_TO_CLOUDHUB" path='#["/accounts/api/organizations/" ++ vars.org_id ++ "/environments"]' outputMimeType="application/json">
+            <http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer " ++ vars.token as String
+}]]]></http:headers>
+        </http:request>
+		<os:store doc:name="environments"  key="environments" >
+			<os:value ><![CDATA[#[payload.data]]]></os:value>
+		</os:store>
+    </sub-flow>
+    <sub-flow name="getProxAndDB" >
+		<flow-ref doc:name="retrieveToken" name="retrieveToken" />
+		<http:request method="GET" doc:name="HTTPS GET /monitoring/api/visualizer/api/bootdata" config-ref="HTTPS_FOR_CONNECTING_TO_CLOUDHUB" path="/monitoring/api/visualizer/api/bootdata" outputMimeType="application/json" >
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer " ++ vars.token as String
+}]]]></http:headers>
+		</http:request>
+		<os:store doc:name="DB" key="DB">
+			<os:value ><![CDATA[#[payload.Settings.datasources.influxdb.database]]]></os:value>
+		</os:store>
+		<os:store doc:name="proxy" key="proxy">
+			<os:value ><![CDATA[#[payload.Settings.datasources.influxdb.id]]]></os:value>
+		</os:store>
+	</sub-flow>
+</mule>

@@ -2,217 +2,218 @@
 <html class="no-js" lang="ru">
 
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap" rel="stylesheet">
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <title>CloudHub logs analyzer</title>
-    <style>
-        #disableBtnClass{
-            pointer-events: none;
-            border: #282c34;
-            border-radius: 30px;
-            font-size: 15px;
-            height: 45px;
-            outline: none;
-            background: rgba(0, 255, 26, 0.5);
-            cursor: pointer;
-            transition: .3s;
-            font-weight: 400;
-            line-height: 45px;
-            text-align: center;
-        }
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap" rel="stylesheet">
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <title>CloudHub logs analyzer</title>
+  <style>
+    #disableBtnClass{
+      pointer-events: none;
+      border: #282c34;
+      border-radius: 30px;
+      font-size: 15px;
+      height: 45px;
+      outline: none;
+      background: rgba(0, 255, 26, 0.5);
+      cursor: pointer;
+      transition: .3s;
+      font-weight: 400;
+      line-height: 45px;
+      text-align: center;
+    }
 
-        *{
-            font-family: 'Roboto', sans-serif;
-            font-weight: 100;
-        }
+    *{
+      font-family: 'Roboto', sans-serif;
+      font-weight: 100;
+    }
 
-        .timeTypeOption{
-            font-weight: 100;
-        }
-        #timeType{
-            border: none;
-            border-radius: 30px;
-            font-size: 15px;
-            height: 45px;
-            outline: none;
-            width: 50%;
-            background: rgba(255,255,255,0.7);
-            cursor: pointer;
-            transition: .3s;
-            font-weight: 400;
-            margin-left: 10px;
-            padding: 10px;
-        }
+    .selectOption{
+      font-weight: 100;
+    }
+    .selector{
+      border: none;
+      border-radius: 30px;
+      font-size: 15px;
+      height: 45px;
+      outline: none;
+      width: 50%;
+      background: rgba(255,255,255,0.7);
+      cursor: pointer;
+      transition: .3s;
+      font-weight: 400;
+      margin-left: 10px;
+      padding: 10px;
+    }
 
-        body{
-            margin: 20px;
-            padding: 20px;
-            background: linear-gradient(125deg, white, #00a0dc);
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
+    body{
+      margin: 20px;
+      padding: 20px;
+      background: linear-gradient(125deg, white, #00a0dc);
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
 
-        .box {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 70vh;
-        }
+    .box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 70vh;
+    }
 
-        .container {
-            width: 750px;
-            display: flex;
-            flex-direction: column;
-            padding: 0 15px 0 15px;
-            align-items: center;
-        }
+    .container {
+      width: 750px;
+      display: flex;
+      flex-direction: column;
+      padding: 0 15px 0 15px;
+      align-items: center;
+    }
 
-        .container1 {
-            display: flex;
-            width: 350px;
-            flex-direction: column;
-            align-content: center;
-        }
+    .container1 {
+      display: flex;
+      width: 350px;
+      flex-direction: column;
+      align-content: center;
+    }
 
-        .headTest{
-            color: white;
-            font-size: 30px;
-            display: flex;
-            justify-content: center;
-            padding: 10px 0 10px 0;
-            text-align: center;
-            font-family: 'Roboto', sans-serif;
-            font-weight: 400;
-        }
+    .headTest{
+      color: white;
+      font-size: 30px;
+      display: flex;
+      justify-content: center;
+      padding: 10px 0 10px 0;
+      text-align: center;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 400;
+    }
 
-        .input-field{
-            display: flex;
-            flex-direction: column;
-        }
+    .input-field{
+      display: flex;
+      flex-direction: column;
+    }
 
-        input{
-            height: 45px;
-            width: 87%;
-            border: none;
-            outline: none;
-            border-radius: 30px;
-            color: white;
-            padding: 0 0 0 42px;
-            background: rgba(255,255,255,0.2);
-            font-size: 16px;
-        }
+    input{
+      height: 45px;
+      width: 87%;
+      border: none;
+      outline: none;
+      border-radius: 30px;
+      color: white;
+      padding: 0 0 0 42px;
+      background: rgba(255,255,255,0.2);
+      font-size: 16px;
+    }
 
-        ::-webkit-input-placeholder{
-            color: white;
-        }
+    ::-webkit-input-placeholder{
+      color: white;
+    }
 
-        .environment{
-            border-style: solid;
-            border-color: aliceblue;
-            -webkit-border-radius: 30px;
-            padding: 20px;
-            margin: 20px;
-        }
+    .environment{
+      border-style: solid;
+      border-color: aliceblue;
+      -webkit-border-radius: 30px;
+      padding: 20px;
+      margin: 20px;
+    }
 
-        button{
-            border: none;
-            border-radius: 30px;
-            font-size: 15px;
-            height: 45px;
-            outline: none;
-            width: 100%;
-            background: rgba(255,255,255,0.7);
-            cursor: pointer;
-            transition: .3s;
-            font-weight: 400;
-        }
+    button{
+      border: none;
+      border-radius: 30px;
+      font-size: 15px;
+      height: 45px;
+      outline: none;
+      width: 100%;
+      background: rgba(255,255,255,0.7);
+      cursor: pointer;
+      transition: .3s;
+      font-weight: 400;
+    }
 
-        #logsOutput{
-            width: 100%;
-        }
+    #logsOutput{
+      width: 100%;
+    }
 
-        button:hover{
-            box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
-        }
+    button:hover{
+      box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
+    }
 
-        .applicationContainer{
-            display: flex;
-            flex-direction: column;
-            margin-top: 30px;
-        }
+    .applicationContainer{
+      display: flex;
+      flex-direction: column;
+      margin-top: 30px;
+    }
 
-        .button{
-            border: none;
-            border-radius: 30px;
-            font-size: 15px;
-            height: 45px;
-            outline: none;
-            background: rgba(255, 0, 0, 0.5);
-            cursor: pointer;
-            transition: .3s;
-            font-weight: 400;
-            line-height: 45px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    .button{
+      border: none;
+      border-radius: 30px;
+      font-size: 15px;
+      height: 45px;
+      outline: none;
+      background: rgba(255, 0, 0, 0.5);
+      cursor: pointer;
+      transition: .3s;
+      font-weight: 400;
+      line-height: 45px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-        .button:hover{
-            box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
-        }
+    .button:hover{
+      box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
+    }
 
-        .hide {
-            display: none
-        }
+    .hide {
+      display: none
+    }
 
-        .show{
-            display: flex;
-            justify-content: center;
-        }
+    .show{
+      display: flex;
+      justify-content: center;
+    }
 
-    </style>
+  </style>
 
 </head>
 
 <body>
 <div class="box">
-    <div class="container">
-        <div class="container1">
-            <form action="\logs" method="post" >
-                <div class="top-header"><span class="headTest">Get logs from your applications</span></div>
-                <div style="display: flex">
-                    <input type="text" id="fperiod" name="period" placeholder="Period">
-                    <select name="timeType" id="timeType">
-                        <option class="timeTypeOption" value="PT,M">minutes</option>
-                        <option class="timeTypeOption" value="PT,H">hour</option>
-                        <option class="timeTypeOption" value="P,D">day</option>
-                        <option class="timeTypeOption" value="P,M">month</option>
-                    </select>
-                </div>
-                <br><br>
-                <div class="input-field">
-                    <input type="text" id="fapplications" name="applications" placeholder="Applications"><br><br>
-                </div>
-                <div class="input-field">
-                    <input type="text" id="fenvironments" name="environments" placeholder="Environments"><br><br>
-                </div>
-                <div class="input-field">
-                    <button id="getLogs" type="submit">Get logs</button>
-                </div>
-            </form>
-            	<div class="input-field" style="padding-top: 30px">
-             		<a href="/">
-                 		<button>Go to menu</button>
-             		</a>
-             	</div>
+  <div class="container">
+    <div class="container1">
+      <form action="\logs" method="post" >
+        <div class="top-header"><span class="headTest">Get logs from your applications</span></div>
+        <div style="display: flex">
+          <input type="text" id="fperiod" name="period" placeholder="Period">
+          <select name="timeType" class="selector" id="timeType">
+            <option class="selectOption" value="PT,M">minutes</option>
+            <option class="selectOption" value="PT,H">hour</option>
+            <option class="selectOption" value="P,D">day</option>
+            <option class="selectOption" value="P,M">month</option>
+          </select>
         </div>
-        <br>
-        <div id="logsOutput"></div>
-        <div id="result" hidden>#[vars.result]</div>
+        <select name="Environments" class="selector" id="environments">
+            <option value="Empty" selected>Select environment</option>
+        </select>
+        <br><br>
+        <select name="Applications" class="selector" id="applications" disabled>
+          <option value="Empty" selected>Select application</option>
+        </select>
+        <div class="input-field">
+          <button id="getLogs" type="submit" disabled>Get logs</button>
+        </div>
+      </form>
+      <div class="input-field" style="padding-top: 30px">
+        <a href="/">
+          <button>Go to menu</button>
+        </a>
+      </div>
     </div>
+    <br>
+    <div id="logsOutput"></div>
+    <div id="result" hidden>#[vars.result]</div>
+    <div id="environmentsFormApp" hidden>#[vars.environments.name]</div>
+  </div>
 </div>
 
 
@@ -220,74 +221,101 @@
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 <script>
 
-    function parseData(errors) {
-        let data = [];
-        errors.forEach(
-            (element) =>
-                data.push([element.time,element.description.Message,element.description.ErrorType,element.description.event]))
-        return data;
+  const environmnets = document.getElementById("environments")
+  const getLogsBtn = document.getElementById("getLogs")
+  const applicationSelector = document.getElementById("applications")
+  const environmentsFormApp = JSON.parse(document.getElementById("environmentsFormApp")?.innerHTML)
+  console.log(environmentsFormApp, "environmentsFormApp")
+  const element = document.createElement("option")
+  element.cloneNode(true)
+  for (let i = 0; i < environmentsFormApp.length; i++){
+    const element = document.createElement("option")
+    element.cloneNode(true)
+    element.setAttribute("value", environmentsFormApp[i])
+    element.setAttribute("class", "selectOption")
+    element.innerHTML = environmentsFormApp[i]
+    environmnets.appendChild(element)
+  }
+
+  environmnets.addEventListener("change", function (selectedOption) {
+    if(selectedOption.target.value === "Empty"){
+      console.log(selectedOption.target.value, "disable")
+      getLogsBtn.disabled = true
+      applicationSelector.disabled = true
+    } else {
+      console.log(selectedOption.target.value, "request")
+      getLogsBtn.disabled = false
+      applicationSelector.disabled = false
     }
+  })
 
-    const divelem = document.querySelector("#logsOutput")
+  function parseData(errors) {
+    let data = [];
+    errors.forEach(
+      (element) =>
+        data.push([element.time,element.description.Message,element.description.ErrorType,element.description.event]))
+    return data;
+  }
 
-    function output() {
-        const result = JSON.parse(document.querySelector("#result")?.innerHTML)
-        result.forEach(error => {
-            const environment = document.createElement("div");
-            environment.setAttribute("class", "environment")
-            environment.innerHTML += "<span class='headTest'> Environment: " + error.environment + "</span><br>"
-            divelem.append(environment)
-            error.applications.forEach(function(value, index){
-                return createApplicationBlock(environment, value["application name"], value["countErrors"], value.errors, value["application name"] + index)
-            })
-        })
+  const divelem = document.querySelector("#logsOutput")
+
+  function output() {
+    const result = JSON.parse(document.querySelector("#result")?.innerHTML)
+    result.forEach(error => {
+      const environment = document.createElement("div");
+      environment.setAttribute("class", "environment")
+      environment.innerHTML += "<span class='headTest'> Environment: " + error.environment + "</span><br>"
+      divelem.append(environment)
+      error.applications.forEach(function(value, index){
+        return createApplicationBlock(environment, value["application name"], value["countErrors"], value.errors, value["application name"] + index)
+      })
+    })
+  }
+
+  function getInfoOfApp(list){
+    list.classList.toggle('hide')
+    list.classList.toggle('show')
+  }
+
+  function createApplicationBlock (environment, applicationName, countError, errors, index) {
+    const block = document.createElement("div");
+    block.setAttribute("class", "applicationContainer")
+    environment.append(block)
+    const button = document.createElement("div");
+    button.setAttribute("class", "btn" + index)
+    button.setAttribute("class", "button")
+    button.addEventListener("click",() => {
+      getInfoOfApp(list)
+    })
+    button.innerHTML += "<span style='margin-right: 50px; font-weight:400'> Application name: " + applicationName + "</span>"
+    button.innerHTML += "<span style='margin-left: 50px; font-weight:400'> Error count: " + countError + "</span>"
+    if (countError === 0){
+      button.removeAttribute("class")
+      button.setAttribute("id", "disableBtnClass")
+      button.setAttribute("class", "btn" + index)
     }
+    block.append(button)
+    const list = document.createElement("div");
+    list.setAttribute("class", "list" + index)
+    list.setAttribute("class", "hide")
+    block.append(list)
+    const table = document.createElement("table");
+    table.setAttribute("id", "errorTable" + index)
+    $(document).ready(function () {
+      $('#errorTable' + index).DataTable({
+        data: parseData(errors),
+        columns: [
+          { title: 'Time' },
+          { title: 'Message' },
+          { title: 'Error type' },
+          { title: 'Event' }
+        ],
+      })});
 
-    function getInfoOfApp(list){
-        list.classList.toggle('hide')
-        list.classList.toggle('show')
-    }
+    list.append(table)
 
-    function createApplicationBlock (environment, applicationName, countError, errors, index) {
-        const block = document.createElement("div");
-        block.setAttribute("class", "applicationContainer")
-        environment.append(block)
-        const button = document.createElement("div");
-        button.setAttribute("class", "btn" + index)
-        button.setAttribute("class", "button")
-        button.addEventListener("click",() => {
-            getInfoOfApp(list)
-        })
-        button.innerHTML += "<span style='margin-right: 50px; font-weight:400'> Application name: " + applicationName + "</span>"
-        button.innerHTML += "<span style='margin-left: 50px; font-weight:400'> Error count: " + countError + "</span>"
-        if (countError === 0){
-            console.log("error 0")
-            button.removeAttribute("class")
-            button.setAttribute("id", "disableBtnClass")
-            button.setAttribute("class", "btn" + index)
-        }
-        block.append(button)
-        const list = document.createElement("div");
-        list.setAttribute("class", "list" + index)
-        list.setAttribute("class", "hide")
-        block.append(list)
-        const table = document.createElement("table");
-        table.setAttribute("id", "errorTable" + index)
-        $(document).ready(function () {
-            $('#errorTable' + index).DataTable({
-                data: parseData(errors),
-                columns: [
-                    { title: 'Time' },
-                    { title: 'Message' },
-                    { title: 'Error type' },
-                    { title: 'Event' }
-                ],
-            })});
-
-        list.append(table)
-
-    }
-    output()
+  }
+  output()
 </script>
 
 
