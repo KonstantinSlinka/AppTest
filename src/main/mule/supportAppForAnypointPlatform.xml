@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:spring="http://www.mulesoft.org/schema/mule/spring" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:spring="http://www.mulesoft.org/schema/mule/spring" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
 http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd
-http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
     <flow name="supportAppForAnypointPlatformFlow"  >
 		<http:listener doc:name="Listener"  config-ref="HTTP_Listener_config" path="/"/>
 		<http:basic-security-filter doc:name="Basic security filter"  realm="anypointPlatformSupport" />
@@ -21,15 +22,15 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 			</otherwise>
 		</choice>
     </flow>
-	<flow name="getMetrics" doc:id="45f22ac1-8e63-43e1-b896-1a4feb8d9eee">
-		<http:listener doc:name="Listener" doc:id="4b39e359-2d53-49d9-a8f8-1e07a2597edd" config-ref="HTTP_Listener_config" path="/logs" />
-		<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload]" doc:name="Set Payload to JSON" doc:id="571a6987-db68-4e32-ae07-eee3b7cc2520" />
-		<choice doc:name="Choice" doc:id="8a42e6ab-4f0f-4879-9187-7c162f83761f">
+	<flow name="getMetrics">
+		<http:listener doc:name="Listener" config-ref="HTTP_Listener_config" path="/metrics" />
+		<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload]" doc:name="Set Payload to JSON" />
+		<choice doc:name="Choice">
 			<when expression='#[payload == ""]'>
-				<http:load-static-resource doc:name="Load metrics page" doc:id="016bc7e8-8e5e-4493-aa96-ff46f0495a73" resourceBasePath="#[p('app.home') ++ &quot;//webapp&quot;]" defaultFile="metrics.html" />
+				<http:load-static-resource doc:name="Load metrics page" resourceBasePath="#[p('app.home') ++ &quot;//webapp&quot;]" defaultFile="metrics.html" />
 			</when>
 			<otherwise>
-				<logger level="INFO" doc:name="Add flow for proccessing metrics" doc:id="0c08f7a6-97b8-47aa-bdbd-b3adc1ec0fa9" message="Add flow for proccessing metrics"/>
+				<flow-ref doc:name="metrixOutputTemp" name="metrixOutput"/>
 			</otherwise>
 		</choice>
 	</flow>
@@ -73,15 +74,17 @@ vars.result]]></ee:set-payload>
 		<flow-ref doc:name="getToken" name="getToken" />
 		<flow-ref doc:name="getOrganizationId" name="getOrganizationId" />
 		<flow-ref doc:name="getEnvironments" name="getEnvironments" />
-	</flow>
+		<flow-ref doc:name="retrieveProxyAndDB" name="getProxAndDB"/>
+	
+</flow>
 	<sub-flow name="getToken" >
         <http:request method="POST" doc:name="HTTPS POST /accounts/api/v2/oauth2/token " config-ref="HTTPS_FOR_CONNECTING_TO_CLOUDHUB" path="/accounts/api/v2/oauth2/token" outputMimeType="application/json">
             <http:body><![CDATA[#[%dw 2.0
 output application/json
 ---
 {
-    "client_id": "6b72b5120d19481ab9e9f17bccd5e0a9",
-    "client_secret": "0E993DF05dAA4ed281CfBB46a5c5dD67",
+    "client_id": "cf8ab672f5844e97822f27454e0f0e04",
+    "client_secret": "81A2402DA78e4795976c80fD418b8dCa",
     "grant_type": "client_credentials"
 }]]]></http:body>
         </http:request>
@@ -203,4 +206,158 @@ errorList map ((item) -> {"time" : convertToDateTime(item.timestamp), "descripti
             </ee:message>
         </ee:transform>
     </sub-flow>
+	<sub-flow name="getProxAndDB" >
+		<flow-ref doc:name="retrieveToken" name="retrieveToken" />
+		<http:request method="GET" doc:name="HTTPS GET /monitoring/api/visualizer/api/bootdata" config-ref="HTTPS_FOR_CONNECTING_TO_CLOUDHUB" path="/monitoring/api/visualizer/api/bootdata" outputMimeType="application/json" >
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer " ++ vars.token as String
+}]]]></http:headers>
+		</http:request>
+		<os:store doc:name="DB" key="DB">
+			<os:value ><![CDATA[#[payload.Settings.datasources.influxdb.database]]]></os:value>
+		</os:store>
+		<os:store doc:name="proxy" key="proxy">
+			<os:value ><![CDATA[#[payload.Settings.datasources.influxdb.id]]]></os:value>
+		</os:store>
+	</sub-flow>
+	<sub-flow name="retrieveProxyAndDB" >
+		<os:retrieve doc:name="DB" key="DB"/>
+		<set-variable value='#[payload as String replace /\"/ with "%22"]' doc:name="DB" variableName="DB"/>
+		<os:retrieve doc:name="proxy" key="proxy"/>
+		<set-variable value="#[payload as String]" doc:name="proxy" variableName="proxy"/>
+	</sub-flow>
+	<flow name="metrixOutput">
+		<ee:transform doc:name="Set Result, Environments For Analysis, Applications For Analysis">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="period"><![CDATA[%dw 2.0
+output application/json
+var types = payload.timeType
+---
+payload.period ++ types]]></ee:set-variable>
+				<ee:set-variable variableName="environmentsForAnalysis"><![CDATA[(payload.environments splitBy  ",") default ${environments}]]></ee:set-variable>
+				<ee:set-variable variableName="applicationsForAnalysis"><![CDATA[(payload.applications splitBy  ",") default ${applications}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="retrieveToken" name="retrieveToken" />
+		<flow-ref doc:name="retrieveOrganizationId" name="retrieveOrganizationId" />
+		<flow-ref doc:name="retrieveEnvironments" name="retrieveEnvironments" />
+		<flow-ref doc:name="retrieveProxyAndDB" name="retrieveProxyAndDB" />
+		<set-variable value="#[[]]" doc:name="Set Result" variableName="result" />
+		<foreach doc:name="For Each by environments" collection="#[vars.environments filter (item) -&gt; vars.environmentsForAnalysis contains item.name]">
+			<flow-ref doc:name="getApplicationsForMetrix" name="getApplicationsForMetrix" />
+			<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;vars.result + vars.environmentApplication]" doc:name="Set Result" variableName="result" />
+		</foreach>
+		<parse-template doc:name="Parse Template" location="webapp\metrics.html" />
+	</flow>
+	<sub-flow name="getApplicationsForMetrix" >
+		<ee:transform doc:name="Set currentEnv, currentEnvName, applications" >
+			<ee:message />
+			<ee:variables >
+				<ee:set-variable variableName="currentEnv" ><![CDATA[payload.id]]></ee:set-variable>
+				<ee:set-variable variableName="currentEnvName" ><![CDATA[payload.name]]></ee:set-variable>
+				<ee:set-variable variableName="applications" ><![CDATA[[]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="GET" doc:name="HTTPS GET /cloudhub/api/v2/applications" config-ref="HTTPS_FOR_CONNECTING_TO_CLOUDHUB" path="/cloudhub/api/v2/applications" outputMimeType="application/json" >
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"X-ANYPNT-ENV-ID" : vars.currentEnv,
+	"Authorization" : "Bearer " ++ vars.token as String
+}]]]></http:headers>
+		</http:request>
+		<set-payload value="#[(payload filter (item) -&gt; vars.applicationsForAnalysis contains item.domain) default []]" doc:name="Filter applications" />
+		<foreach doc:name="For Each by applications" collection="#[payload]" >
+			<flow-ref doc:name="getIOBoundRequests" name="getIOBoundRequests" />
+			<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;vars.applications + vars.IOBoundRequests]" doc:name="Set Applications" variableName="applications" />
+		</foreach>
+		<set-variable value='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10; "environment": vars.currentEnvName,&#10; "applications": vars.applications&#10;}]' doc:name="Set EnvironmentApplication" variableName="environmentApplication" />
+	</sub-flow>
+	<sub-flow name="getIOBoundRequests" >
+		<ee:transform doc:name="Set currentApp, currentAppName, inboundRequests">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="currentApp"><![CDATA[payload.fullDomain]]></ee:set-variable>
+				<ee:set-variable variableName="inboundRequests" ><![CDATA[[]]]></ee:set-variable>
+				<ee:set-variable variableName="currentAppName" ><![CDATA[payload.domain	]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<set-variable value='#[output application/java&#10;---&#10;"curl \"https://anypoint.mulesoft.com/monitoring/api/visualizer/api/datasources/proxy/" ++ vars.proxy as String ++ "/query?db=" ++ vars.DB as String ++ "&amp;q=SELECT%20sum(%22avg_request_count%22)%20FROM%20%22app_inbound_metric%22%20WHERE%20(%22org_id%22%20%3D%20%27" ++ vars.org_id as String ++ "%27%20AND%20%22env_id%22%20%3D%20%27" ++ vars.currentEnv as String ++ "%27%20AND%20%22app_id%22%20%3D%20%27" ++ vars.currentApp as String ++ "%27%20AND%20%22endpoint_type%22%20%3D%20%27http%27%20AND%20%22endpoint%22%20!%3D%20%27%27)%20AND%20time%20%3E%3D%20now()%20-%20" ++ vars.period as String ++ "%20GROUP%20BY%20%22endpoint%22%20tz(%27Europe%2FMinsk%27)&amp;epoch=ms\" -H \"Authorization: Bearer " ++ vars.token as String ++ "\" --ssl-no-revoke"]' doc:name="Set Q for inbound requests" variableName="q" />
+		<until-successful maxRetries="5" doc:name="Until Successful" millisBetweenRetries="1000">
+			<scripting:execute engine="groovy" doc:name="Get inboundRequests">
+			<scripting:code><![CDATA[def sout = new StringBuilder(), serr = new StringBuilder()
+def curl = vars.q
+def proc = curl.execute()
+
+proc.consumeProcessOutput(sout, serr)
+
+proc.waitForOrKill(1000)
+
+def out = sout.toString()
+
+println "$out"
+
+return "$out"]]></scripting:code>
+		</scripting:execute>
+			<flow-ref doc:name="retryIfEmptyPayload" name="retryIfEmptyPayload"/>
+		</until-successful>
+		<ee:transform doc:name="Set inboundRequests" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="inboundRes" ><![CDATA[%dw 2.0
+output application/json
+var inputArray = read(payload default "","application/json").results.series[0]
+---
+inputArray map ((item) -> {
+    "name" : item.tags.endpoint,
+    "count": item.values[0][1]
+})]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<set-variable value='#[output application/java&#10;---&#10;"curl \"https://anypoint.mulesoft.com/monitoring/api/visualizer/api/datasources/proxy/" ++ vars.proxy as String ++ "/query?db=" ++ vars.DB as String ++ "&amp;q=SELECT%20sum(%22avg_request_count%22)%20FROM%20%22app_outbound_metric%22%20WHERE%20(%22org_id%22%20%3D%20%27" ++ vars.org_id as String ++ "%27%20AND%20%22env_id%22%20%3D%20%27" ++ vars.currentEnv as String ++ "%27%20AND%20%22app_id%22%20%3D%20%27" ++ vars.currentApp as String ++ "%27%20AND%20%22endpoint_type%22%20%3D%20%27http%27%20AND%20%22endpoint%22%20!%3D%20%27%27)%20AND%20time%20%3E%3D%20now()%20-%20" ++ vars.period as String ++ "%20GROUP%20BY%20%22endpoint%22%20tz(%27Europe%2FMinsk%27)&amp;epoch=ms\" -H \"Authorization: Bearer " ++ vars.token as String ++ "\" --ssl-no-revoke"]' doc:name="Set Q for outbound requests" variableName="q" />
+		<until-successful maxRetries="5" doc:name="Until Successful1" millisBetweenRetries="1000">
+			<scripting:execute engine="groovy" doc:name="Get outboundRequests">
+				<scripting:code><![CDATA[def sout = new StringBuilder(), serr = new StringBuilder()
+def curl = vars.q
+def proc = curl.execute()
+
+proc.consumeProcessOutput(sout, serr)
+
+proc.waitForOrKill(1000)
+
+def out = sout.toString()
+
+println "$out"
+
+return "$out"]]></scripting:code>
+			</scripting:execute>
+			<flow-ref doc:name="retryIfEmptyPayload" name="retryIfEmptyPayload" />
+		</until-successful>
+		<ee:transform doc:name="Set outboundRequests">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="outboundRes" ><![CDATA[%dw 2.0
+output application/json
+var inputArray = read(payload default "","application/json").results.series[0]
+---
+inputArray map ((item) -> {
+    "name" : item.tags.endpoint,
+    "count": item.values[0][1]
+})]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<set-variable value='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10; "application name": vars.currentAppName,&#10; "inboundRequests": vars.inboundRes,&#10; "outboundRequests" : vars.outboundRes&#10;}]' doc:name="Set ApplicationInstances" variableName="IOBoundRequests" />
+	</sub-flow>
+	<sub-flow name="retryIfEmptyPayload" >
+		<choice doc:name="Choice">
+				<when expression='#[payload == ""]'>
+					<raise-error doc:name="Raise error" type="CUSTOM:PAYLOAD_IS_EMPTY" />
+				</when>
+			</choice>
+	</sub-flow>
+
 </mule>

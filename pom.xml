@@ -7,7 +7,7 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>mule-application</packaging>
 
-	<name>apptest(New)</name>
+	<name>apptest(270323)</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -55,6 +55,10 @@
 						<sharedLibrary>
 							<groupId>org.springframework.security</groupId>
 							<artifactId>spring-security-crypto</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>org.codehaus.groovy</groupId>
+							<artifactId>groovy-all</artifactId>
 						</sharedLibrary>
 					</sharedLibraries>
 				</configuration>
@@ -122,6 +126,18 @@
 			<artifactId>mule-objectstore-connector</artifactId>
 			<version>1.2.1</version>
 			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-scripting-module</artifactId>
+			<version>2.0.2</version>
+			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>2.4.21</version>
+			<classifier>indy</classifier>
 		</dependency>
 	</dependencies>
 
