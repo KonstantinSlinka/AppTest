@@ -12,10 +12,11 @@ http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/s
 		<http:request-connection protocol="HTTPS" host="anypoint.mulesoft.com" port="443"/>
 	</http:request-config>
 	 <http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config"  >
-		<http:listener-connection host="0.0.0.0" port="8088" />
+		<http:listener-connection host="${http.host}" port="${http.port}" />
 	</http:listener-config>
 	<spring:security-manager doc:name="Spring Security manager"  >
 			<spring:delegate-security-provider name="memory-provider" delegate-ref="authenticationManager" />
 	</spring:security-manager>
 	<spring:config name="Spring_Config" doc:name="Spring Config"  files="beans.xml" />
+	 <configuration-properties doc:name="Configuration properties"  file="config\analysis.properties" />
 	</mule>

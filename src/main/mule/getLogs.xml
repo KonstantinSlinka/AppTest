@@ -6,19 +6,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
-	<flow name="getLogs" >
-		<http:listener doc:name="Listener"  config-ref="HTTP_Listener_config" path="/logs" />
-		<set-payload doc:name="Set Payload to JSON"  value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload]"/>
-		<choice doc:name="Choice"  >
-			<when expression='#[payload == ""]'>
-				<http:load-static-resource doc:name="Load logs page"  resourceBasePath="#[p('app.home') ++ &quot;//webapp&quot;]" defaultFile="logs.html" />
-			</when>
-			<otherwise >
-				<flow-ref doc:name="logsOutput"  name="logsOutput"/>
-			</otherwise>
-		</choice>
-    </flow>   
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">  
 	<sub-flow name="logsOutput" >
 		<ee:transform doc:name="Set Result, Environments For Analysis, Applications For Analysis">
 			<ee:message />
@@ -28,18 +16,16 @@ output application/json
 var types = payload.timeType splitBy ","
 ---
 types[0] ++ payload.period ++ types[1]]]></ee:set-variable>
-				<ee:set-variable variableName="environmentsForAnalysis"><![CDATA[(payload.environments splitBy  ",") default ${environments}]]></ee:set-variable>
+				<ee:set-variable variableName="environmentsForAnalysis"><![CDATA[payload.environments default ${environments}]]></ee:set-variable>
 				<ee:set-variable variableName="applicationsForAnalysis"><![CDATA[(payload.applications splitBy  ",") default ${applications}]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<flow-ref doc:name="retrieveToken" name="retrieveToken" />
 		<flow-ref doc:name="retrieveOrganizationId" name="retrieveOrganizationId" />
-		<flow-ref doc:name="retrieveEnvironments" name="retrieveEnvironments" />
+		<flow-ref doc:name="retrieveEnvironments" doc:id="5ae4ce36-3c56-4689-884a-7a827938fffe" name="retrieveEnvironments"/>
 		<set-variable value="#[[]]" doc:name="Set Result" variableName="result" />
-		<foreach doc:name="For Each by environments" collection="#[vars.environments filter (item) -&gt; vars.environmentsForAnalysis contains item.name]">
-			<flow-ref doc:name="getApplications" name="getApplications" />
-			<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;vars.result + vars.environmentApplication]" doc:name="Set Result" variableName="result" />
-		</foreach>
+		<flow-ref doc:name="handlingApplicationsForLogs" name="handlingApplicationsForLogs" doc:id="67ba4e46-bc15-41c5-a8e1-b38c9aa7f891" />
+		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;vars.result + vars.environmentApplication]" doc:name="Set Result" variableName="result" />
 		<ee:transform doc:name="Transform Message">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
@@ -50,37 +36,27 @@ vars.result]]></ee:set-payload>
 		</ee:transform>
 		<parse-template doc:name="Parse Template" location="webapp\logs.html" />
 	</sub-flow>
-	<sub-flow name="getApplications">
-        <ee:transform doc:name="Set currentEnv, currentEnvName, applications"  >
+	<sub-flow name="handlingApplicationsForLogs" doc:id="d324ab9b-f962-4d60-b695-26cc62c32305">
+        <ee:transform doc:name="Set currentEnv, applications"  doc:id="67ab4cbc-4590-4ffb-984b-4321108bb391">
 			<ee:message >
 			</ee:message>
 			<ee:variables >
-				<ee:set-variable variableName="currentEnv" ><![CDATA[payload.id]]></ee:set-variable>
-				<ee:set-variable variableName="currentEnvName" ><![CDATA[payload.name]]></ee:set-variable>
+				<ee:set-variable variableName="currentEnv" ><![CDATA[(vars.environments filter $.name == vars.environmentsForAnalysis).id[0]]]></ee:set-variable>
 				<ee:set-variable variableName="applications" ><![CDATA[[]]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<http:request method="GET" doc:name="HTTPS GET /cloudhub/api/v2/applications" config-ref="HTTPS_FOR_CONNECTING_TO_CLOUDHUB" path="/cloudhub/api/v2/applications" outputMimeType="application/json">
-            <http:headers><![CDATA[#[output application/java
----
-{
-	"X-ANYPNT-ENV-ID" : vars.currentEnv,
-	"Authorization" : "Bearer " ++ vars.token as String
-}]]]></http:headers>
-        </http:request>
-        <set-payload value="#[(payload filter (item) -&gt; vars.applicationsForAnalysis contains item.domain) default []]" doc:name="Filter applications"  />
-		<foreach doc:name="For Each by applications" collection="#[payload]">
-            <flow-ref doc:name="getInstnace" name="getInstnace" />
+		<foreach doc:name="For Each by applications" collection="#[vars.applicationsForAnalysis]">
+            <flow-ref doc:name="handlingInstnaceForLogs" name="handlingInstnaceForLogs" />
             <set-variable value="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;vars.applications + vars.applicationInstances]" doc:name="Set Applications" variableName="applications" />
         </foreach>
-        <set-variable value="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA; &quot;environment&quot;: vars.currentEnvName,&#xA; &quot;applications&quot;: vars.applications&#xA;}]" doc:name="Set EnvironmentApplication" variableName="environmentApplication" />
+        <set-variable value="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA; &quot;environment&quot;: vars.environmentsForAnalysis,&#xA; &quot;applications&quot;: vars.applications&#xA;}]" doc:name="Set EnvironmentApplication" variableName="environmentApplication" />
     </sub-flow>
-	<sub-flow name="getInstnace">
+	<sub-flow name="handlingInstnaceForLogs">
         <ee:transform doc:name="Set currentApp, errors"  >
 			<ee:message >
 			</ee:message>
 			<ee:variables >
-				<ee:set-variable variableName="currentApp" ><![CDATA[payload.domain]]></ee:set-variable>
+				<ee:set-variable variableName="currentApp" ><![CDATA[payload]]></ee:set-variable>
 				<ee:set-variable variableName="errors" ><![CDATA[[]]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>

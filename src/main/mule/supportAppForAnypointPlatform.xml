@@ -9,16 +9,28 @@ http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mul
 		<spring:authorization-filter doc:name="Authorization filter"  requiredAuthorities="ROLE_ADMIN" />
 		<http:load-static-resource doc:name="Load index page"  resourceBasePath="#[p('app.home') ++ &quot;//webapp&quot;]" />
 	</flow>
-	<flow name="updateToken"  >
-		<scheduler doc:name="Scheduler"  >
-			<scheduling-strategy >
-				<fixed-frequency frequency="1" timeUnit="HOURS"/>
-			</scheduling-strategy>
-		</scheduler>
-		<flow-ref doc:name="getToken" name="getToken" />
-		<flow-ref doc:name="getOrganizationId" name="getOrganizationId" />
-		<flow-ref doc:name="getEnvironments" name="getEnvironments" />
-		<flow-ref doc:name="retrieveProxyAndDB" name="getProxAndDB"/>
-	</flow> 
-    <configuration-properties doc:name="Configuration properties"  file="config\analysis.properties" />
+	<flow name="getMetrix" doc:id="669911f3-4838-4023-ae32-c07e25f9a806" >
+		<http:listener doc:name="Listener" doc:id="bdf3ef39-c879-4db1-98fd-71198fad8c52" config-ref="HTTP_Listener_config" path="/metrics" />
+		<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload]" doc:name="Set Payload to JSON" />
+		<choice doc:name="Choice">
+			<when expression='#[payload == ""]'>
+				<http:load-static-resource doc:name="Load metrics page" resourceBasePath="#[p('app.home') ++ &quot;//webapp&quot;]" defaultFile="metrics.html" />
+			</when>
+			<otherwise>
+				<flow-ref doc:name="metrixOutputTemp" name="metrixOutput" />
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="getLogs" doc:id="3d742af5-b5e5-4bd3-b9d6-3b2decf6b5b9">
+		<http:listener doc:name="Listener"  config-ref="HTTP_Listener_config" path="/logs" />
+		<set-payload doc:name="Set Payload to JSON"  value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload]"/>
+		<choice doc:name="Choice"  >
+			<when expression='#[payload == ""]'>
+				<http:load-static-resource doc:name="Load logs page"  resourceBasePath="#[p('app.home') ++ &quot;//webapp&quot;]" defaultFile="logs.html" />
+			</when>
+			<otherwise >
+				<flow-ref doc:name="logsOutput"  name="logsOutput"/>
+			</otherwise>
+		</choice>
+    </flow>   
 </mule>
