@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<sub-flow name="retrieveToken"  >
+		<os:retrieve doc:name="token"  key="token" />
+		<set-variable value="#[payload]" doc:name="Set Token"  variableName="token"/>
+	</sub-flow>
+	<sub-flow name="retrieveOrganizationId" >
+		<os:retrieve doc:name="organizationId"  key="orgId" />
+		<set-variable value="#[payload]" doc:name="Set OrganizationId"  variableName="org_id" />
+	</sub-flow>
+	<sub-flow name="retrieveEnvironments" doc:id="983f56c1-0a16-47eb-9486-c277ab47c07e">
+		<os:retrieve doc:name="environments"  key="environments" />
+		<set-variable value="#[payload]" doc:name="Set Environments"  variableName="environments" />
+	</sub-flow>
+	<sub-flow name="retrieveProxyAndDB" >
+		<os:retrieve doc:name="DB" key="DB"/>
+		<set-variable value='#[payload as String replace /\"/ with "%22"]' doc:name="Set DB" variableName="DB"/>
+		<os:retrieve doc:name="proxy" key="proxy"/>
+		<set-variable value="#[payload as String]" doc:name="Set Proxy" variableName="proxy"/>
+	</sub-flow>
+	<sub-flow name="retrieveApplications" doc:id="9237b652-5506-48af-a4f0-76c79bd8b6fb" >
+		<os:retrieve doc:name="applications" doc:id="85cd0eb0-f54d-433a-9d7a-e2e6b1b284e6" key="#[vars.currentEnv default ${environments}]">
+			<os:default-value ><![CDATA[#[${applications}]]]></os:default-value>
+		</os:retrieve>
+		<set-variable value="#[payload]" doc:name="Set Applications" doc:id="d725d095-732b-4ddd-a79e-8a1a022e3aed" variableName="applications"/>
+	</sub-flow>
+</mule>
