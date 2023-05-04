@@ -7,7 +7,7 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<sub-flow name="getToken" >
+	<sub-flow name="get-token" >
 		<set-variable value="${client_secret}" doc:name="Set Client_secret" doc:id="186e59e8-442b-4014-a6a6-7f96bacda97f" variableName="client_secret"/>
 		<set-variable value="${client_id}" doc:name="Set Client_id" doc:id="9b9299cb-9e36-4d81-a7c7-cf7feb0bbcb5" variableName="client_id"/>
 		<http:request method="POST" doc:name="HTTPS POST /accounts/api/v2/oauth2/token " config-ref="HTTPS_FOR_CONNECTING_TO_CLOUDHUB" path="/accounts/api/v2/oauth2/token" outputMimeType="application/json">
@@ -24,7 +24,7 @@ output application/json
 			<os:value ><![CDATA[#[payload.access_token]]]></os:value>
 		</os:store>
     </sub-flow>
-	<sub-flow name="getOrganizationId" >
+	<sub-flow name="get-organization-id" >
 		<flow-ref doc:name="retrieveToken"  name="retrieveToken"/>
 		<http:request method="GET" doc:name="HTTPS GET /accounts/api/me" config-ref="HTTPS_FOR_CONNECTING_TO_CLOUDHUB" path="/accounts/api/me" outputMimeType="application/json">
             <http:headers><![CDATA[#[output application/java
@@ -37,7 +37,7 @@ output application/json
 			<os:value ><![CDATA[#[payload.client.org_id]]]></os:value>
 		</os:store>
     </sub-flow>
-	<sub-flow name="getEnvironments" >
+	<sub-flow name="get-environments" >
         <flow-ref doc:name="retrieveToken"  name="retrieveToken" />
 		<flow-ref doc:name="retrieveOrganizationId"  name="retrieveOrganizationId"/>
 		<http:request method="GET" doc:name="HTTPS GET /accounts/api/organizations/{org_id}/environments" config-ref="HTTPS_FOR_CONNECTING_TO_CLOUDHUB" path='#["/accounts/api/organizations/" ++ vars.org_id ++ "/environments"]' outputMimeType="application/json">
@@ -51,7 +51,7 @@ output application/json
 			<os:value ><![CDATA[#[payload.data]]]></os:value>
 		</os:store>
     </sub-flow>
-    <sub-flow name="getApplications" doc:id="1ba341da-33e8-4ceb-99f4-2b4287181ba8" >
+    <sub-flow name="get-applications" doc:id="1ba341da-33e8-4ceb-99f4-2b4287181ba8" >
 		<flow-ref doc:name="retrieveToken" doc:id="52432ab3-83f0-4518-bb4f-2c38998dcb67" name="retrieveToken" />
 		<flow-ref doc:name="retrieveEnvironments" doc:id="a0380d1c-70f5-4bd9-967c-70164c0f2770" name="retrieveEnvironments"/>
 		<foreach doc:name="For Each" doc:id="3d0435eb-4713-45f2-8251-1ef0c3165b26" collection="#[vars.environments]">
@@ -67,7 +67,7 @@ output application/json
 			<os:store doc:name="applicationsByEnvironment" doc:id="e23f37c5-5033-4f65-87bd-7c97957a7a9a" key="#[vars.currentEnv.name]"/>
 		</foreach>
 	</sub-flow>
-	<sub-flow name="getProxAndDB" >
+	<sub-flow name="get-prox-and-db" >
 		<flow-ref doc:name="retrieveToken" name="retrieveToken" />
 		<http:request method="GET" doc:name="HTTPS GET /monitoring/api/visualizer/api/bootdata" config-ref="HTTPS_FOR_CONNECTING_TO_CLOUDHUB" path="/monitoring/api/visualizer/api/bootdata" outputMimeType="application/json" >
 			<http:headers ><![CDATA[#[output application/java
@@ -83,16 +83,16 @@ output application/json
 			<os:value ><![CDATA[#[payload.Settings.datasources.influxdb.id]]]></os:value>
 		</os:store>
 	</sub-flow>
-	<flow name="updateToken"  >
+	<flow name="update-token"  >
 		<scheduler doc:name="Scheduler"  >
 			<scheduling-strategy >
 				<fixed-frequency frequency="1" timeUnit="HOURS"/>
 			</scheduling-strategy>
 		</scheduler>
-		<flow-ref doc:name="getToken" name="getToken" />
-		<flow-ref doc:name="getOrganizationId" name="getOrganizationId" />
-		<flow-ref doc:name="getEnvironments" name="getEnvironments" />
-		<flow-ref doc:name="retrieveProxyAndDB" name="getProxAndDB"/>
-		<flow-ref doc:name="getApplications" doc:id="886ce37d-cea3-461d-8cd6-4975d0cec9f0" name="getApplications"/>
+		<flow-ref doc:name="getToken" name="get-token" />
+		<flow-ref doc:name="getOrganizationId" name="get-organization-id" />
+		<flow-ref doc:name="getEnvironments" name="get-environments" />
+		<flow-ref doc:name="getProxAndDB" name="get-prox-and-db"/>
+		<flow-ref doc:name="getApplications" doc:id="886ce37d-cea3-461d-8cd6-4975d0cec9f0" name="get-applications"/>
 	</flow> 
 </mule>

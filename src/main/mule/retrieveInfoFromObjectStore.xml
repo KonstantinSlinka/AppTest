@@ -4,7 +4,7 @@
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
-	<sub-flow name="retrieveToken"  >
+	<sub-flow name="retrieveToken"  doc:id="d1aa7c89-1680-47e1-95df-2d3fc58c6b2c">
 		<os:retrieve doc:name="token"  key="token" />
 		<set-variable value="#[payload]" doc:name="Set Token"  variableName="token"/>
 	</sub-flow>

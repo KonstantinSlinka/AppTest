@@ -1746,7 +1746,6 @@ type auto_1ba341da_33e8_4ceb_99f4_2b4287181ba8_Output_Variables_token = {|  |} {
       </types:output-event>
     </types:processor-declaration>
   </types:enrichment>
-  <types:enrichment select="#67ab4cbc-4590-4ffb-984b-4321108bb391"/>
   <types:enrichment select="#9237b652-5506-48af-a4f0-76c79bd8b6fb">
     <types:processor-declaration>
       <types:output-event>

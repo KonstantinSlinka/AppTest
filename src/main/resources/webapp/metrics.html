@@ -2,329 +2,451 @@
 <html class="no-js" lang="ru">
 
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap" rel="stylesheet">
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <title>CloudHub logs analyzer</title>
-    <style>
-        #disableBtnClass{
-            pointer-events: none;
-            border: #282c34;
-            border-radius: 30px;
-            font-size: 15px;
-            height: 45px;
-            outline: none;
-            background: rgba(0, 255, 26, 0.5);
-            cursor: pointer;
-            transition: .3s;
-            font-weight: 400;
-            line-height: 45px;
-            text-align: center;
-        }
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.sumoselect/3.1.6/sumoselect.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap" rel="stylesheet">
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <title>CloudHub logs analyzer</title>
+  <style>
+    #disableBtnClass{
+      pointer-events: none;
+      border: #282c34;
+      border-radius: 30px;
+      font-size: 15px;
+      height: 45px;
+      outline: none;
+      background: rgba(0, 255, 26, 0.5);
+      cursor: pointer;
+      transition: .3s;
+      font-weight: 400;
+      line-height: 45px;
+      text-align: center;
+    }
 
-        *{
-            font-family: 'Roboto', sans-serif;
-            font-weight: 100;
-        }
+    .selector{
+      border: none;
+      border-radius: 30px;
+      font-size: 15px;
+      height: 45px;
+      outline: none;
+      width: 100%;
+      background: rgba(255,255,255,0.7);
+      cursor: pointer;
+      transition: .3s;
+      font-weight: 400;
+      padding: 10px;
+    }
 
-        .timeTypeOption{
-            font-weight: 100;
-        }
-        #timeType{
-            border: none;
-            border-radius: 30px;
-            font-size: 15px;
-            height: 45px;
-            outline: none;
-            width: 50%;
-            background: rgba(255,255,255,0.7);
-            cursor: pointer;
-            transition: .3s;
-            font-weight: 400;
-            margin-left: 10px;
-            padding: 10px;
-        }
+    .selectOption{
+      font-weight: 100;
+    }
 
-        body{
-            margin: 20px;
-            padding: 20px;
-            background: linear-gradient(125deg, white, #00a0dc);
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
+    *{
+      font-family: 'Roboto', sans-serif;
+      font-weight: 100;
+    }
 
-        .box {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 70vh;
-        }
+    .timeTypeOption{
+      font-weight: 100;
+    }
+    #timeType{
+      border: none;
+      border-radius: 30px;
+      font-size: 15px;
+      height: 45px;
+      outline: none;
+      width: 50%;
+      background: rgba(255,255,255,0.7);
+      cursor: pointer;
+      transition: .3s;
+      font-weight: 400;
+      margin-left: 10px;
+      padding: 10px;
+    }
 
-        .container {
-            width: 600px;
-            display: flex;
-            flex-direction: column;
-            padding: 0 15px 0 15px;
-            align-items: center;
-        }
+    body{
+      margin: 20px;
+      padding: 20px;
+      background: linear-gradient(125deg, white, #00a0dc);
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
 
-        .container1 {
-            display: flex;
-            width: 350px;
-            flex-direction: column;
-            align-content: center;
-        }
+    .box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 70vh;
+    }
 
-        .headTest{
-            color: white;
-            font-size: 30px;
-            display: flex;
-            justify-content: center;
-            padding: 10px 0 10px 0;
-            text-align: center;
-            font-family: 'Roboto', sans-serif;
-            font-weight: 400;
-        }
+    .container {
+      width: 600px;
+      display: flex;
+      flex-direction: column;
+      padding: 0 15px 0 15px;
+      align-items: center;
+    }
 
-        .input-field{
-            display: flex;
-            flex-direction: column;
-        }
+    .container1 {
+      display: flex;
+      width: 350px;
+      flex-direction: column;
+      align-content: center;
+    }
 
-        input{
-            height: 45px;
-            width: 87%;
-            border: none;
-            outline: none;
-            border-radius: 30px;
-            color: white;
-            padding: 0 0 0 42px;
-            background: rgba(255,255,255,0.2);
-            font-size: 16px;
-        }
+    .headTest{
+      color: white;
+      font-size: 30px;
+      display: flex;
+      justify-content: center;
+      padding: 10px 0 10px 0;
+      text-align: center;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 400;
+    }
 
-        ::-webkit-input-placeholder{
-            color: white;
-        }
+    .input-field{
+      display: flex;
+      flex-direction: column;
+    }
 
-        .environment{
-            border-style: solid;
-            border-color: aliceblue;
-            -webkit-border-radius: 30px;
-            padding: 20px;
-            margin: 20px;
-        }
+    input{
+      height: 45px;
+      width: 87%;
+      border: none;
+      outline: none;
+      margin-right: 10px;
+      border-radius: 30px;
+      color: white;
+      padding: 0 0 0 42px;
+      background: rgba(255,255,255,0.2);
+      font-size: 16px;
+    }
 
-        td{
-            color: white;
-            text-align: center;
-        }
+    ::-webkit-input-placeholder{
+      color: white;
+    }
 
-        th{
-            border: 1px solid white;
-            font-weight: bold;
-            color: white;
-        }
+    .environment{
+      border-style: solid;
+      border-color: aliceblue;
+      -webkit-border-radius: 30px;
+      padding: 20px;
+      margin: 20px;
+    }
 
-        button{
-            border: none;
-            border-radius: 30px;
-            font-size: 15px;
-            height: 45px;
-            outline: none;
-            width: 100%;
-            background: rgba(255,255,255,0.7);
-            cursor: pointer;
-            transition: .3s;
-            font-weight: 400;
-        }
+    td{
+      color: white;
+      text-align: center;
+    }
 
-        #metricsOutput{
-            width: 100%;
-        }
+    th{
+      border: 1px solid white;
+      font-weight: bold;
+      color: white;
+    }
 
-        button:hover{
-            box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
-        }
+    button{
+      border: none;
+      border-radius: 30px;
+      font-size: 15px;
+      height: 45px;
+      outline: none;
+      width: 100%;
+      background: rgba(255,255,255,0.7);
+      cursor: pointer;
+      transition: .3s;
+      font-weight: 400;
+    }
 
-        .applicationContainer{
-            display: flex;
-            flex-direction: column;
-            margin-top: 30px;
-        }
+    #metricsOutput{
+      width: 100%;
+    }
 
-        .button{
-            border: none;
-            border-radius: 30px;
-            font-size: 15px;
-            height: 45px;
-            outline: none;
-            background: rgba(255, 0, 0, 0.5);
-            cursor: pointer;
-            transition: .3s;
-            font-weight: 400;
-            line-height: 45px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    button:hover{
+      box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
+    }
 
-        .button:hover{
-            box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
-        }
+    .applicationContainer{
+      display: flex;
+      flex-direction: column;
+      margin-top: 30px;
+    }
 
-        .hide {
-            display: none
-        }
+    .button{
+      border: none;
+      border-radius: 30px;
+      font-size: 15px;
+      height: 45px;
+      outline: none;
+      background: rgba(255, 0, 0, 0.5);
+      cursor: pointer;
+      transition: .3s;
+      font-weight: 400;
+      line-height: 45px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-        .show{
-            display: flex;
-            flex-direction: column;
-        }
+    .button:hover{
+      box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
+    }
 
-        h3{
-            display: flex;
-            justify-content: center;
-        }
+    .hide {
+      display: none
+    }
 
-    </style>
+    .show{
+      display: flex;
+      flex-direction: column;
+    }
+
+    h3{
+      display: flex;
+      justify-content: center;
+    }
+
+    .form-control{
+      display: flex;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+
+    .SumoSelect {
+      width: 100% !important;
+    }
+
+    .SumoSelect>.CaptionCont {
+      position: relative !important;
+      background-color: #def3fb !important;
+      border-radius: 30px !important;
+      border: none !important;
+      height: 32px !important;
+      margin: 0 !important;
+    }
+
+    .SumoSelect>.CaptionCont>span {
+      padding: 6px !important;
+    }
+
+    .SumoSelect.disabled>.CaptionCont {
+      border-color: #ccc !important;
+      box-shadow: none !important;
+      border-radius: 30px !important;
+      height: 32px !important;
+    }
+
+    .SumoSelect>.CaptionCont>span.placeholder {
+      color: black !important;
+      font-weight: 400 !important;
+      font-style: unset !important;
+    }
+
+  </style>
 
 </head>
 
 <body>
 <div class="box">
-    <div class="container">
-        <div class="container1">
-            <form action="\metrics" method="post" >
-                <div class="top-header"><span class="headTest">Get metrics from your applications</span></div>
-                <div style="display: flex">
-                    <input type="text" id="fperiod" name="period" placeholder="Period">
-                    <select name="timeType" id="timeType">
-                        <option class="timeTypeOption" value="m">minutes</option>
-                        <option class="timeTypeOption" value="h">hour</option>
-                        <option class="timeTypeOption" value="d">day</option>
-                    </select>
-                </div>
-                <br><br>
-                <div class="input-field">
-                    <input type="text" id="fapplications" name="applications" placeholder="Applications"><br><br>
-                </div>
-                <div class="input-field">
-                    <input type="text" id="fenvironments" name="environments" placeholder="Environments"><br><br>
-                </div>
-                <div class="input-field">
-                    <button id="getMetrics" type="submit">Get metrics</button>
-                </div>
-            </form>
-            <div class="input-field" style="padding-top: 30px">
-                <a href="/">
-                    <button>Go to menu</button>
-                </a>
-            </div>
+  <div class="container">
+    <div class="container1">
+      <form action="\metrics" method="post" >
+        <div class="top-header"><span class="headTest">Get metrics from your applications</span></div>
+        <div class="form-control">
+          <input type="text" id="fperiod" name="period" placeholder="Period">
+          <select name="timeType" id="timeType">
+            <option class="timeTypeOption" value="m">minutes</option>
+            <option class="timeTypeOption" value="h">hour</option>
+            <option class="timeTypeOption" value="d">day</option>
+          </select>
         </div>
-        <br>
-        <div id="metricsOutput"></div>
-        <div id="result" hidden>#[vars.result]</div>
+        <div class="form-control">
+          <select name="environments" class="selector" id="environments">
+            <option value="Empty" selected>Select environment</option>
+          </select>
+        </div>
+        <div class="form-control">
+          <select multiple="multiple" placeholder="Select application" class="applications"></select>
+          <input id="applicationsToBackend" name="applications" hidden/>
+        </div>
+        <div class="input-field">
+          <button id="getMetrics" type="submit" disabled>Get metrics</button>
+        </div>
+      </form>
+      <div class="input-field" style="padding-top: 30px">
+        <a href="/" style="text-decoration: none">
+          <button>Go to menu</button>
+        </a>
+      </div>
     </div>
+    <br>
+    <div id="metricsOutput"></div>
+    <div id="result" hidden>#[vars.result]</div>
+    <div id="environmentsFormApp" hidden>#[vars.environments.name]</div>
+  </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.js" integrity="sha512-oL84kLQMEPIS350nZEpvFH1whU0HHGNUDq/X3WBdDAvKP7jn06gHTsCsymsoPYKF/duN8ZxzzvQgOaaZSgcYtQ==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.sumoselect/3.1.6/jquery.sumoselect.min.js" defer></script>
 <script>
 
-    function parseData(metrics) {
-        let data = [];
-        metrics.forEach(
-            (element) =>
-                data.push([element.name, element.count]))
-        return data;
+  const environmnets = document.getElementById("environments")
+  const getMetricsBtn = document.getElementById("getMetrics")
+  const environmentsFormApp = JSON.parse(document.getElementById("environmentsFormApp")?.innerHTML)
+
+  for (let i = 0; i < environmentsFormApp.length; i++){
+    const environmentElement = document.createElement("option")
+    environmentElement.setAttribute("value", environmentsFormApp[i])
+    environmentElement.setAttribute("class", "selectOption")
+    environmentElement.innerHTML = environmentsFormApp[i]
+    environmnets.appendChild(environmentElement)
+  }
+
+  environmnets.addEventListener("change", function (selectedOption) {
+    const lengthOfOptioons = $(".options li").length
+    for(let i = lengthOfOptioons-1 ; i >= 0; i--){
+      $('select.applications')[0].sumo.remove(i);
     }
-
-    const divelem = document.querySelector("#metricsOutput")
-
-    function output() {
-        const result = JSON.parse(document.querySelector("#result")?.innerHTML)
-        result.forEach(environments => {
-            const environment = document.createElement("div");
-            environment.setAttribute("class", "environment")
-            environment.innerHTML += "<span class='headTest'> Environment: " + environments.environment + "</span><br>"
-            divelem.append(environment)
-            environments.applications.forEach(function (value, index) {
-                return createApplicationBlock(environment, value["application name"], value["inboundRequests"], value["outboundRequests"], value["application name"] + index)
-            })
-        })
-    }
-
-    function getInfoOfApp(list) {
-        list.classList.toggle('hide')
-        list.classList.toggle('show')
-    }
-
-    function createApplicationBlock(environment, applicationName, inboundRequest, outboundRequests, index) {
-        const block = document.createElement("div");
-        block.setAttribute("class", "applicationContainer")
-        environment.append(block)
-        const button = document.createElement("button");
-        button.setAttribute("class", "btn" + index)
-        button.addEventListener("click", () => {
-            getInfoOfApp(list)
-        })
-        button.innerHTML += "Application name: " + applicationName
-        block.append(button)
-        const list = document.createElement("div");
-        list.setAttribute("class", "list" + index)
-        list.setAttribute("class", "hide")
-        const inboundRequestHeader = document.createElement("h3")
-        inboundRequestHeader.innerHTML = "<span style='color: white; font-weight: bold'> Inbound requests </span><br>"
-
-        const inboundRequestTable = document.createElement("table")
-        list.append(inboundRequestHeader)
-        list.append(inboundRequestTable)
-        const tableHeadNames = ["Endpoint", "Count of request"]
-        generateTableHead(inboundRequestTable, tableHeadNames)
-        if (inboundRequest != null) {
-            generateTable(inboundRequestTable, parseData(inboundRequest))
-        } else {
-            generateTable(inboundRequestTable, [{endpoint: "Not found", count: "Not found"}])
-        }
-        const outboundRequestHeader = document.createElement("h3")
-        outboundRequestHeader.innerHTML = "<span style='color: white; font-weight: bold'> Outbound requests </span><br>"
-
-        const outboundRequestTable = document.createElement("table")
-        list.append(outboundRequestHeader)
-        list.append(outboundRequestTable)
-        generateTableHead(outboundRequestTable, tableHeadNames)
-        if (outboundRequests != null) {
-            generateTable(outboundRequestTable, parseData(outboundRequests))
-        } else {
-            generateTable(outboundRequestTable, [{endpoint: "Not found", count: "Not found"}])
-        }
-        block.append(list)
-    }
-
-    function generateTableHead(table, data) {
-        let thead = table.createTHead();
-        let row = thead.insertRow();
-        for (let key of data) {
-            let th = document.createElement("th");
-            let text = document.createTextNode(key);
-            th.appendChild(text);
-            row.appendChild(th);
-        }
-    }
-
-    function generateTable(table, data) {
-        for (let element of data) {
-            let row = table.insertRow();
-            for (key in element) {
-                let cell = row.insertCell();
-                let text = document.createTextNode(element[key]);
-                cell.appendChild(text);
+    if(selectedOption.target.value === "Empty"){
+      $('select.applications')[0].sumo.disable();
+    } else {
+      fetch("/getApplications?environment=" + selectedOption.target.value)
+        .then(resonse => resonse.json())
+        .then((result) => {
+          if (result.length === 0){
+            $('select.applications')[0].sumo.disable();
+          } else {
+            for (let i = 0; i < result.length; i++) {
+              $('select.applications')[0].sumo.add(result[i].domain, result[i].domain, i);
             }
-        }
+          }
+        })
+      $('select.applications')[0].sumo.enable();
     }
+  })
 
-    output()
+  $(document).ready(function () {
+    $('.applications').SumoSelect({
+      placeholder: 'This is a placeholder',
+      csvDispCount: 3
+    });
+    $('select.applications')[0].sumo.disable();
+  });
+
+  $(".applications").on("change", function(){
+    let str = "";
+    $(".applications option:selected").each(function () {
+      str += $(this).text() + ",";
+    })
+    let selectedElements = str.substr(0, str.length-1).split(",");
+    if(str.substr(0, str.length-1).split(",").length >= 1 && !(selectedElements.length === 1 && selectedElements[0] === "")){
+      getMetricsBtn.removeAttribute("disabled")
+      document.getElementById("applicationsToBackend").setAttribute("value",str.substr(0, str.length-1))
+    } else {
+      getMetricsBtn.setAttribute("disabled", "disabled")
+    }
+  });
+
+  function parseData(metrics) {
+    let data = [];
+    metrics.forEach(
+      (element) =>
+        data.push([element.name, element.count]))
+    return data;
+  }
+
+  const divelem = document.querySelector("#metricsOutput")
+
+  function output() {
+    const result = JSON.parse(document.querySelector("#result")?.innerHTML)
+    result.forEach(environments => {
+      const environment = document.createElement("div");
+      environment.setAttribute("class", "environment")
+      environment.innerHTML += "<span class='headTest'> Environment: " + environments.environment + "</span><br>"
+      divelem.append(environment)
+      environments.applications.forEach(function (value, index) {
+        return createApplicationBlock(environment, value["application name"], value["inboundRequests"], value["outboundRequests"], value["application name"] + index)
+      })
+    })
+  }
+
+  function getInfoOfApp(list) {
+    list.classList.toggle('hide')
+    list.classList.toggle('show')
+  }
+
+  function createApplicationBlock(environment, applicationName, inboundRequest, outboundRequests, index) {
+    const block = document.createElement("div");
+    block.setAttribute("class", "applicationContainer")
+    environment.append(block)
+    const button = document.createElement("button");
+    button.setAttribute("class", "btn" + index)
+    button.addEventListener("click", () => {
+      getInfoOfApp(list)
+    })
+    button.innerHTML += "Application name: " + applicationName
+    block.append(button)
+    const list = document.createElement("div");
+    list.setAttribute("class", "list" + index)
+    list.setAttribute("class", "hide")
+    const inboundRequestHeader = document.createElement("h3")
+    inboundRequestHeader.innerHTML = "<span style='color: white; font-weight: bold'> Inbound requests </span><br>"
+
+    const inboundRequestTable = document.createElement("table")
+    list.append(inboundRequestHeader)
+    list.append(inboundRequestTable)
+    const tableHeadNames = ["Endpoint", "Count of request"]
+    generateTableHead(inboundRequestTable, tableHeadNames)
+    if (inboundRequest != null) {
+      generateTable(inboundRequestTable, parseData(inboundRequest))
+    } else {
+      generateTable(inboundRequestTable, [{endpoint: "Not found", count: "Not found"}])
+    }
+    const outboundRequestHeader = document.createElement("h3")
+    outboundRequestHeader.innerHTML = "<span style='color: white; font-weight: bold'> Outbound requests </span><br>"
+
+    const outboundRequestTable = document.createElement("table")
+    list.append(outboundRequestHeader)
+    list.append(outboundRequestTable)
+    generateTableHead(outboundRequestTable, tableHeadNames)
+    if (outboundRequests != null) {
+      generateTable(outboundRequestTable, parseData(outboundRequests))
+    } else {
+      generateTable(outboundRequestTable, [{endpoint: "Not found", count: "Not found"}])
+    }
+    block.append(list)
+  }
+
+  function generateTableHead(table, data) {
+    let thead = table.createTHead();
+    let row = thead.insertRow();
+    for (let key of data) {
+      let th = document.createElement("th");
+      let text = document.createTextNode(key);
+      th.appendChild(text);
+      row.appendChild(th);
+    }
+  }
+
+  function generateTable(table, data) {
+    for (let element of data) {
+      let row = table.insertRow();
+      for (key in element) {
+        let cell = row.insertCell();
+        let text = document.createTextNode(element[key]);
+        cell.appendChild(text);
+      }
+    }
+  }
+
+  output()
 </script>
 
 </body>

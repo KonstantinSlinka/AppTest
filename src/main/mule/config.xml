@@ -11,8 +11,8 @@ http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/s
 	<http:request-config name="HTTPS_FOR_CONNECTING_TO_CLOUDHUB" doc:name="HTTP Request configuration"  >
 		<http:request-connection protocol="HTTPS" host="anypoint.mulesoft.com" port="443"/>
 	</http:request-config>
-	 <http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config"  >
-		<http:listener-connection host="${http.host}" port="${http.port}" />
+	 <http:listener-config name="HTTP_Listener_config" doc:name="HTTP_Listener_config"  >
+		<http:listener-connection host="${http.host}" port="${http.port}"/>
 	</http:listener-config>
 	<spring:security-manager doc:name="Spring Security manager"  >
 			<spring:delegate-security-provider name="memory-provider" delegate-ref="authenticationManager" />

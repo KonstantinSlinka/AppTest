@@ -2,6 +2,8 @@
 <html class="no-js" lang="ru">
 
 <head>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.sumoselect/3.1.6/sumoselect.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
@@ -9,45 +11,41 @@
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
   <title>CloudHub logs analyzer</title>
   <style>
-    #disableBtnClass{
-      pointer-events: none;
-      border: #282c34;
-      border-radius: 30px;
-      font-size: 15px;
-      height: 45px;
-      outline: none;
-      background: rgba(0, 255, 26, 0.5);
-      cursor: pointer;
-      transition: .3s;
-      font-weight: 400;
-      line-height: 45px;
-      text-align: center;
+    .disableBtnClass {
+      margin-left: 10px;
+      border-radius: 50px;
+      background-color: rgba(98, 255, 0, 0.66);
+      color: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 20px;
     }
 
-    *{
+    * {
       font-family: 'Roboto', sans-serif;
       font-weight: 100;
     }
 
-    .selectOption{
+    .selectOption {
       font-weight: 100;
     }
-    .selector{
+
+    .selector {
       border: none;
       border-radius: 30px;
       font-size: 15px;
       height: 45px;
       outline: none;
-      width: 50%;
-      background: rgba(255,255,255,0.7);
+      width: 100%;
+      background: rgba(255, 255, 255, 0.7);
       cursor: pointer;
       transition: .3s;
       font-weight: 400;
-      margin-left: 10px;
       padding: 10px;
     }
 
-    body{
+    body {
       margin: 20px;
       padding: 20px;
       background: linear-gradient(125deg, white, #00a0dc);
@@ -78,7 +76,7 @@
       align-content: center;
     }
 
-    .headTest{
+    .headTest {
       color: white;
       font-size: 30px;
       display: flex;
@@ -89,88 +87,118 @@
       font-weight: 400;
     }
 
-    .input-field{
+    .input-field {
       display: flex;
       flex-direction: column;
     }
 
-    input{
+    input {
       height: 45px;
       width: 87%;
       border: none;
       outline: none;
+      margin-right: 10px;
       border-radius: 30px;
       color: white;
       padding: 0 0 0 42px;
-      background: rgba(255,255,255,0.2);
+      background: rgba(255, 255, 255, 0.2);
       font-size: 16px;
     }
 
-    ::-webkit-input-placeholder{
+    ::-webkit-input-placeholder {
       color: white;
     }
 
-    .environment{
-      border-style: solid;
-      border-color: aliceblue;
-      -webkit-border-radius: 30px;
+    .environment {
       padding: 20px;
       margin: 20px;
     }
 
-    button{
+    button {
       border: none;
       border-radius: 30px;
       font-size: 15px;
       height: 45px;
       outline: none;
       width: 100%;
-      background: rgba(255,255,255,0.7);
+      background: rgba(255, 255, 255, 0.7);
       cursor: pointer;
       transition: .3s;
       font-weight: 400;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
     }
 
-    #logsOutput{
+    #logsOutput {
       width: 100%;
     }
 
-    button:hover{
-      box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
+    button:hover {
+      box-shadow: 1px 5px 7px 1px rgba(0, 0, 0, 0.2);
     }
 
-    .applicationContainer{
+    .applicationContainer {
       display: flex;
       flex-direction: column;
       margin-top: 30px;
-    }
-
-    .button{
-      border: none;
-      border-radius: 30px;
-      font-size: 15px;
-      height: 45px;
-      outline: none;
-      background: rgba(255, 0, 0, 0.5);
-      cursor: pointer;
-      transition: .3s;
-      font-weight: 400;
-      line-height: 45px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .button:hover{
-      box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
     }
 
     .hide {
       display: none
     }
 
-    .show{
+    .show {
       display: flex;
       justify-content: center;
+      padding-top: 20px;
+    }
+
+    .form-control {
+      display: flex;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+
+    .SumoSelect {
+      width: 100% !important;
+    }
+
+    .SumoSelect > .CaptionCont {
+      position: relative !important;
+      background-color: #def3fb !important;
+      border-radius: 30px !important;
+      height: 32px !important;
+      border: none !important;
+      margin: 0 !important;
+    }
+
+    .SumoSelect.disabled > .CaptionCont {
+      border-color: #ccc !important;
+      box-shadow: none !important;
+      border-radius: 30px !important;
+      height: 32px !important;
+    }
+
+    .SumoSelect > .CaptionCont > span {
+      padding: 6px !important;
+    }
+
+    .SumoSelect > .CaptionCont > span.placeholder {
+      color: black !important;
+      font-weight: 400 !important;
+      font-style: unset !important;
+    }
+
+    .errorIndicator {
+      margin-left: 10px;
+      border-radius: 50px;
+      background-color: rgba(255, 0, 0, 0.66);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 20px;
     }
 
   </style>
@@ -181,9 +209,9 @@
 <div class="box">
   <div class="container">
     <div class="container1">
-      <form action="\logs" method="post" >
+      <form action="\logs" method="post">
         <div class="top-header"><span class="headTest">Get logs from your applications</span></div>
-        <div style="display: flex">
+        <div class="form-control">
           <input type="text" id="fperiod" name="period" placeholder="Period">
           <select name="timeType" class="selector" id="timeType">
             <option class="selectOption" value="PT,M">minutes</option>
@@ -192,19 +220,21 @@
             <option class="selectOption" value="P,M">month</option>
           </select>
         </div>
-        <select name="Environments" class="selector" id="environments">
+        <div class="form-control">
+          <select name="environments" class="selector" id="environments">
             <option value="Empty" selected>Select environment</option>
-        </select>
-        <br><br>
-        <select name="Applications" class="selector" id="applications" disabled>
-          <option value="Empty" selected>Select application</option>
-        </select>
+          </select>
+        </div>
+        <div class="form-control">
+          <select multiple="multiple" placeholder="Select application" class="applications"></select>
+          <input id="applicationsToBackend" name="applications" hidden/>
+        </div>
         <div class="input-field">
           <button id="getLogs" type="submit" disabled>Get logs</button>
         </div>
       </form>
       <div class="input-field" style="padding-top: 30px">
-        <a href="/">
+        <a href="/" style="text-decoration: none">
           <button>Go to menu</button>
         </a>
       </div>
@@ -216,44 +246,93 @@
   </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
 
-<script src='http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.js'></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.js"
+        integrity="sha512-oL84kLQMEPIS350nZEpvFH1whU0HHGNUDq/X3WBdDAvKP7jn06gHTsCsymsoPYKF/duN8ZxzzvQgOaaZSgcYtQ=="
+        crossorigin="anonymous"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.sumoselect/3.1.6/jquery.sumoselect.min.js" defer></script>
 <script>
 
-  const environmnets = document.getElementById("environments")
-  const getLogsBtn = document.getElementById("getLogs")
-  const applicationSelector = document.getElementById("applications")
-  const environmentsFormApp = JSON.parse(document.getElementById("environmentsFormApp")?.innerHTML)
-  console.log(environmentsFormApp, "environmentsFormApp")
-  const element = document.createElement("option")
-  element.cloneNode(true)
-  for (let i = 0; i < environmentsFormApp.length; i++){
-    const element = document.createElement("option")
-    element.cloneNode(true)
-    element.setAttribute("value", environmentsFormApp[i])
-    element.setAttribute("class", "selectOption")
-    element.innerHTML = environmentsFormApp[i]
-    environmnets.appendChild(element)
+  const getElement = (str) => document.getElementById(str)
+
+  getElement("fperiod").addEventListener("change", (e) => {
+    console.log(e.target.value)
+      if (e.target.value === "" || getElement("applicationsToBackend").value === "") {
+        getLogsBtn.setAttribute("disabled", "disabled")
+      } else {
+        getLogsBtn.removeAttribute("disabled")
+      }
+  })
+
+  const environmnets = getElement("environments")
+  const getLogsBtn = getElement("getLogs")
+  const environmentsFormApp = JSON.parse(getElement("environmentsFormApp")?.innerHTML)
+
+  for (let i = 0; i < environmentsFormApp.length; i++) {
+    const environmentElement = document.createElement("option")
+    environmentElement.setAttribute("value", environmentsFormApp[i])
+    environmentElement.setAttribute("class", "selectOption")
+    environmentElement.innerHTML = environmentsFormApp[i]
+    environmnets.appendChild(environmentElement)
   }
 
   environmnets.addEventListener("change", function (selectedOption) {
-    if(selectedOption.target.value === "Empty"){
-      console.log(selectedOption.target.value, "disable")
-      getLogsBtn.disabled = true
-      applicationSelector.disabled = true
+    const lengthOfOptioons = $(".options li").length
+    for (let i = lengthOfOptioons - 1; i >= 0; i--) {
+      $('select.applications')[0].sumo.remove(i);
+    }
+    if (selectedOption.target.value === "Empty") {
+      $('select.applications')[0].sumo.disable();
     } else {
-      console.log(selectedOption.target.value, "request")
-      getLogsBtn.disabled = false
-      applicationSelector.disabled = false
+      fetch("/getApplications?environment=" + selectedOption.target.value)
+        .then(resonse => resonse.json())
+        .then((result) => {
+          if (result.length === 0) {
+            $('select.applications')[0].sumo.disable();
+          } else {
+            for (let i = 0; i < result.length; i++) {
+              $('select.applications')[0].sumo.add(result[i].domain, result[i].domain, i);
+            }
+          }
+        })
+      $('select.applications')[0].sumo.enable();
     }
   })
+
+  $(document).ready(function () {
+    $('.applications').SumoSelect({
+      placeholder: 'This is a placeholder',
+      csvDispCount: 3
+    });
+    $('select.applications')[0].sumo.disable();
+  });
+
+  $(".applications").on("change", function () {
+  
+    let str = "";
+    $(".applications option:selected").each(function () {
+      str += $(this).text() + ",";
+    })
+    let selectedElements = str.substr(0, str.length - 1).split(",");
+    if ((selectedElements.length >= 1 && !(selectedElements.length === 1 && selectedElements[0] === ""))
+      && getElement("fperiod").value !== "") {
+      getLogsBtn.removeAttribute("disabled")
+      getElement("applicationsToBackend").setAttribute("value", str.substr(0, str.length - 1))
+    } else {
+      getLogsBtn.setAttribute("disabled", "disabled")
+    }
+  });
 
   function parseData(errors) {
     let data = [];
     errors.forEach(
       (element) =>
-        data.push([element.time,element.description.Message,element.description.ErrorType,element.description.event]))
+        data.push([element.time, element.description.Message, element.description.ErrorType, element.description.event]))
     return data;
   }
 
@@ -266,33 +345,31 @@
       environment.setAttribute("class", "environment")
       environment.innerHTML += "<span class='headTest'> Environment: " + error.environment + "</span><br>"
       divelem.append(environment)
-      error.applications.forEach(function(value, index){
+      error.applications.forEach(function (value, index) {
         return createApplicationBlock(environment, value["application name"], value["countErrors"], value.errors, value["application name"] + index)
       })
     })
   }
 
-  function getInfoOfApp(list){
+  function getInfoOfApp(list) {
     list.classList.toggle('hide')
     list.classList.toggle('show')
   }
 
-  function createApplicationBlock (environment, applicationName, countError, errors, index) {
+  function createApplicationBlock(environment, applicationName, countError, errors, index) {
     const block = document.createElement("div");
     block.setAttribute("class", "applicationContainer")
     environment.append(block)
-    const button = document.createElement("div");
+    const button = document.createElement("button");
     button.setAttribute("class", "btn" + index)
-    button.setAttribute("class", "button")
-    button.addEventListener("click",() => {
+    button.addEventListener("click", () => {
       getInfoOfApp(list)
     })
     button.innerHTML += "<span style='margin-right: 50px; font-weight:400'> Application name: " + applicationName + "</span>"
-    button.innerHTML += "<span style='margin-left: 50px; font-weight:400'> Error count: " + countError + "</span>"
-    if (countError === 0){
-      button.removeAttribute("class")
-      button.setAttribute("id", "disableBtnClass")
-      button.setAttribute("class", "btn" + index)
+    if (countError !== 0) {
+      button.innerHTML += "<span style='margin-left: 50px;font-weight:400;display: flex;justify-content: flex-end;align-items: center;'> Error count: <span class='errorIndicator'>" + countError + "</span></span>"
+    } else {
+      button.innerHTML += "<span style='margin-left: 50px;font-weight:400;display: flex;justify-content: flex-end;align-items: center;'> Error count: <span class='disableBtnClass'>" + countError + "</span></span>"
     }
     block.append(button)
     const list = document.createElement("div");
@@ -305,16 +382,18 @@
       $('#errorTable' + index).DataTable({
         data: parseData(errors),
         columns: [
-          { title: 'Time' },
-          { title: 'Message' },
-          { title: 'Error type' },
-          { title: 'Event' }
+          {title: 'Time'},
+          {title: 'Message'},
+          {title: 'Error type'},
+          {title: 'Event'}
         ],
-      })});
+      })
+    });
 
     list.append(table)
 
   }
+
   output()
 </script>
 

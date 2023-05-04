@@ -20,7 +20,7 @@
 			</munit-tools:mock-when>
 		</munit:behavior>
 		<munit:execution >
-			<flow-ref doc:name="Flow-ref to getLogs"  name="getLogs"/>
+			<flow-ref doc:name="Flow-ref to getLogs"  name="get-logs-flow" doc:id="b3552094-fc4b-4d86-bd27-9a63a94e7feb"/>
 		</munit:execution>
 		<munit:validation >
 			<munit-tools:verify-call doc:name="Verify call"  processor="http:load-static-resource" atLeast="1">
@@ -42,7 +42,7 @@
 			</munit-tools:mock-when>
 		</munit:behavior>
 		<munit:execution >
-			<flow-ref doc:name="Flow-ref to getLogs"  name="getLogs" />
+			<flow-ref doc:name="Flow-ref to getLogs"  name="get-logs-flow" doc:id="0b05b51c-dc40-4a46-84ea-2d01176a7dad"/>
 		</munit:execution>
 		<munit:validation >
 			<munit-tools:verify-call doc:name="Verify call"  processor="flow-ref" atLeast="1" >
@@ -111,7 +111,7 @@
 			</munit-tools:mock-when>
 		</munit:behavior>
 		<munit:execution>
-			<flow-ref doc:name="Flow-ref to logsOutput"  name="logsOutput" />
+			<flow-ref doc:name="Flow-ref to logsOutput"  name="logs-output" doc:id="1b61da09-f398-4482-95a4-b46703c7c230"/>
 		</munit:execution>
 		<munit:validation>
 			<munit-tools:assert-equals doc:name="Assert equals"  actual="#[vars.result]" expected='#[[&#10;  {&#10;    "environment": "some_envName",&#10;    "applications": [&#10;      {&#10;        "application name": "some_domain",&#10;        "countErrors": 0&#10;      }&#10;    ]&#10;  }&#10;]]' />

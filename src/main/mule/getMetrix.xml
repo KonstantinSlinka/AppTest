@@ -9,7 +9,7 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
 http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd 
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
-	<sub-flow name="metrixOutput">
+	<sub-flow name="metrix-output">
 		<ee:transform doc:name="Set Result, Environments For Analysis, Applications For Analysis">
 			<ee:message />
 			<ee:variables>
@@ -27,21 +27,21 @@ payload.period ++ types]]></ee:set-variable>
 		<flow-ref doc:name="retrieveProxyAndDB" name="retrieveProxyAndDB" />
 		<flow-ref doc:name="retrieveEnvironments" doc:id="0fc0b4c8-f562-471a-b840-0993c17fcf39" name="retrieveEnvironments"/>
 		<set-variable value="#[[]]" doc:name="Set Result" variableName="result" />
-		<flow-ref doc:name="getApplicationsForMetrix" name="handlingApplicationsForMetrix" />
+		<flow-ref doc:name="handlingApplicationsForMetrix" name="handling-applications-for-metrix" />
 		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;vars.result + vars.environmentApplication]" doc:name="Set Result" variableName="result" />
 		<parse-template doc:name="Parse Template" location="webapp\metrics.html" />
 	</sub-flow>
-	<sub-flow name="handlingApplicationsForMetrix" >
+	<sub-flow name="handling-applications-for-metrix" >
 		<set-variable value="#[vars.environmentsForAnalysis]" doc:name="Set CurrentEnv" doc:id="5fae7ee4-eef9-49d0-9559-c94fe66a4cac" variableName="currentEnv"/>
 		<flow-ref doc:name="retrieveApplications" doc:id="4818d393-ec55-4479-9dcb-33cf6cf87836" name="retrieveApplications" />
 		<set-variable value="#[[]]" doc:name="Set ApplicationsForOutput" doc:id="194716c7-36c2-4123-ae50-2eb32058a684" variableName="applicationsForOutput" />
 		<foreach doc:name="For Each by applications" collection="#[vars.applications filter (vars.applicationsForAnalysis contains $.domain)]" >
-			<flow-ref doc:name="getIOBoundRequests" name="handlingIOBoundRequests" />
+			<flow-ref doc:name="handlingIOBoundRequests" name="handling-iobound-requests" />
 			<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;vars.applicationsForOutput + vars.IOBoundRequests]" doc:name="Set ApplicationsForOutput" variableName="applicationsForOutput" />
 		</foreach>
 		<set-variable value='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10; "environment": vars.currentEnv,&#10; "applications": vars.applicationsForOutput&#10;}]' doc:name="Set EnvironmentApplication" variableName="environmentApplication" />
 	</sub-flow>
-	<sub-flow name="handlingIOBoundRequests" >
+	<sub-flow name="handling-iobound-requests" >
 		<ee:transform doc:name="Set currentApp, currentAppName, inboundRequests">
 			<ee:message />
 			<ee:variables>
@@ -67,7 +67,7 @@ println "$out"
 
 return "$out"]]></scripting:code>
 		</scripting:execute>
-			<flow-ref doc:name="retryIfEmptyPayload" name="retryIfEmptyPayload"/>
+			<flow-ref doc:name="retryIfEmptyPayload" name="retry-Iif-empty-payload"/>
 		</until-successful>
 		<ee:transform doc:name="Set inboundRequests" >
 			<ee:message >
@@ -100,7 +100,7 @@ println "$out"
 
 return "$out"]]></scripting:code>
 			</scripting:execute>
-			<flow-ref doc:name="retryIfEmptyPayload" name="retryIfEmptyPayload" />
+			<flow-ref doc:name="retryIfEmptyPayload" name="retry-Iif-empty-payload" />
 		</until-successful>
 		<ee:transform doc:name="Set outboundRequests">
 			<ee:message />
@@ -117,7 +117,7 @@ inputArray map ((item) -> {
 		</ee:transform>
 		<set-variable value='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10; "application name": vars.currentAppName,&#10; "inboundRequests": vars.inboundRes,&#10; "outboundRequests" : vars.outboundRes&#10;}]' doc:name="Set ApplicationInstances" variableName="IOBoundRequests" />
 	</sub-flow>
-	<sub-flow name="retryIfEmptyPayload" >
+	<sub-flow name="retry-Iif-empty-payload" >
 		<choice doc:name="Choice">
 				<when expression='#[payload == ""]'>
 					<raise-error doc:name="Raise error" type="CUSTOM:PAYLOAD_IS_EMPTY" />

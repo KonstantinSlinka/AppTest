@@ -1,23 +1,4 @@
-<!doctype html>
-<html class="no-js" lang="ru">
-
-<head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap" rel="stylesheet">
-    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.js" integrity="sha512-oL84kLQMEPIS350nZEpvFH1whU0HHGNUDq/X3WBdDAvKP7jn06gHTsCsymsoPYKF/duN8ZxzzvQgOaaZSgcYtQ==" crossorigin="anonymous"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js" integrity="sha512-2FAQqknslN8pS8aF3mK9Iiene7xFUawTM2h/aloIG4tkbXbzTlUimIfZvt6gLNTJbknJ4jwBKGWIQ4uq0DIPeA==" crossorigin="anonymous"></script>
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <title>CloudHub logs analyzer</title>
-    <style>
-
-        *{
-            font-family: 'Roboto', sans-serif;
-            font-weight: 100;
-        }
-
-        body{
+body{
             margin: 20px;
             padding: 20px;
             background: linear-gradient(125deg, white, #00a0dc);
@@ -86,27 +67,3 @@
         button:hover{
             box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
         }
-
-    </style>
-
-</head>
-
-<body>
-<div class="box">
-    <div class="container">
-        <div class="container1">
-             <div class="input-field">
-             <a href="logs">
-                 <button>Get logs</button>
-             </a>
-             </div>
-             <div class="input-field">
-             <a href="metrics">
-                 <button>Get metrics</button>
-             </a>
-             </div>
-        </div>
-    </div>
-</div>
-</body>
-</html>
